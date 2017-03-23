@@ -8,8 +8,13 @@ const VIEWPORT = {
     width: 1024,
     height: 1024
 };
-const solvedKataSelector = '.list-item.kata .item-title a';
-const totalKatasSelector = '.has-tip.tip-right.is-active a';
+const SELECTORS = {
+    content: '#shell_content',
+    loaderMaker: '.js-infinite-marker',
+    solvedKatas: '.list-item.kata .item-title a',
+    totalKatas: '.has-tip.tip-right.is-active a'
+};
+const LOADING_TIMEOUT = 3000;
 
 const nightmare = Nightmare();
 
@@ -35,11 +40,11 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
             .useragent(USER_AGENT)
             .viewport(VIEWPORT.width, VIEWPORT.height)
             .goto(`${CODEWARS_URL}/users/${userName}/completed`)
-            .wait('#shell_content')
+            .wait(SELECTORS.content)
             .scrollTo(0, 0);
 
         const isScroll = yield nightmare
-            .evaluate(() => document.querySelectorAll('.js-infinite-marker').length === 1);
+            .evaluate(() => document.querySelectorAll(SELECTORS.loaderMaker).length === 1);
 
         if (isScroll) {
             let previousHeight;
@@ -50,10 +55,10 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
                     .evaluate(() => document.body.scrollHeight);
                 yield nightmare
                     .scrollTo(currentHeight, 0)
-                    .wait(6000);
+                    .wait(LOADING_TIMEOUT);
             }
         }
         return yield nightmare
-            .evaluate(grabKatas, userName, solvedKataSelector, totalKatasSelector)
+            .evaluate(grabKatas, userName, SELECTORS.solvedKatas, SELECTORS.totalKatas)
             .end();
     })();

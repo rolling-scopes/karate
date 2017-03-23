@@ -1,14 +1,14 @@
 {
   "name": "karate",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "webscraper",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "predeploy": "npm run test",
     "deploy": "sls deploy",
     "test": "tsc && ava"
   },
-  "author": "serverless.com",
+  "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.0",
