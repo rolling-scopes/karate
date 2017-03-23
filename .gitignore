@@ -1,0 +1,7 @@
+.gcloud
+.serverless
+dist
+.webpack
+node_modules
+npm-debug.log
+project.yml
