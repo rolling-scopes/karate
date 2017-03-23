@@ -10,7 +10,7 @@ const VIEWPORT = {
 };
 const SELECTORS = {
     content: '#shell_content',
-    loaderMaker: '.js-infinite-marker',
+    loaderMarker: '.js-infinite-marker',
     solvedKatas: '.list-item.kata .item-title a',
     totalKatas: '.has-tip.tip-right.is-active a'
 };
@@ -44,7 +44,7 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
             .scrollTo(0, 0);
 
         const isScroll = yield nightmare
-            .evaluate(() => document.querySelectorAll(SELECTORS.loaderMaker).length === 1);
+            .evaluate(() => document.querySelectorAll(SELECTORS.loaderMarker).length === 1);
 
         if (isScroll) {
             let previousHeight;
