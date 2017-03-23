@@ -6,7 +6,7 @@ export const scrape_katas = (req, res) => {
   
   const { username } = req.query;
   
-  if (username) return res.status(500).json({ error: new Error('username is empty') });
+  if (!username) return res.status(500).json({ error: new Error('username is empty') });
   
   codewars.scrape_katas(username)
     .then(data => res.status(200).json(data))
