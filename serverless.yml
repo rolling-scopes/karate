@@ -31,7 +31,7 @@ functions:
   codewars:
     memorySize: 1024
     timeout: 60
-    handler: scrape_katas
+    handler: handler.scrape_katas
     events:
       - http:
           path: codewars/katas
