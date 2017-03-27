@@ -20,7 +20,7 @@
     "babili-webpack-plugin": "0.0.11",
     "serverless-google-cloudfunctions": "^1.0.0",
     "serverless-webpack": "https://github.com/elastic-coders/serverless-webpack.git",
-    "typescript": "^2.2.1",
+    "typescript": "^2.2.2",
     "webpack": "^2.3.1",
     "webpack-node-externals": "^1.5.4"
   },

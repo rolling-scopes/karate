@@ -1,14 +1,12 @@
 
 import * as codewars from './codewars/scrape';
 
-export const scrape_katas = (req, res) => {
-  if (req.method !== 'GET') res.status(500).json({ error: new Error('Supports only GET') });
+export const scrape_katas = (evt, ctx, cb) => {
+  const { username } = JSON.parse(evt.body);
   
-  const { username } = req.query;
-  
-  if (!username) return res.status(500).json({ error: new Error('username is empty') });
+  if (!username) return cb(new Error('username is empty'));
   
   codewars.scrape_katas(username)
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(500).json({ error }));
+    .then(data => cb(null, { data }))
+    .catch(error => cb(error));
 };

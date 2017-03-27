@@ -1,20 +1,39 @@
 service: karate
 
 provider:
-  name: google
-  runtime: nodejs
-  project: ${file(./project.yml):project}
-  credentials: .gcloud/keyfile.json
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  region: us-west-2
+  deploymentBucket: ${self:service}.deploys
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource:
+        - "Fn::Join":
+          - ""
+          - - "arn:aws:sns:"
+            - Ref: "AWS::Region"
+            - ":"
+            - Ref: "AWS::AccountId"
+            - ":${self:service}-${self:provider.stage}-log"
 
 plugins:
-  - serverless-google-cloudfunctions
   - serverless-webpack
+
 custom:
   webpackIncludeModules: true
 
 functions:
   codewars:
     memorySize: 1024
+    timeout: 60
     handler: scrape_katas
     events:
-      - http: /katas
+      - http:
+          path: codewars/katas
+          method: post
+          cors: true
