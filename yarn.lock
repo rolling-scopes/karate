@@ -34,6 +34,16 @@
     ansi-styles "^2.2.1"
     esutils "^2.0.2"
 
+"@types/node@*", "@types/node@^7.0.11":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.11.tgz#55680189f2335f080f0aeb57871f0b9823646d89"
+
+"@types/pino@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/pino/-/pino-3.0.1.tgz#90db868d8bb723c16b3a42fc753fe25709553479"
+  dependencies:
+    "@types/node" "*"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -1482,6 +1492,12 @@ encodeurl@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.1.tgz#79e3d58655346909fe6f0f45a5de68103b294d20"
 
+end-of-stream@^1.1.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.4.0.tgz#7a90d833efda6cfa6eac0f4949dbb0fad3a63206"
+  dependencies:
+    once "^1.4.0"
+
 enhanced-resolve@^3.0.0, enhanced-resolve@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-3.1.0.tgz#9f4b626f577245edcf4b2ad83d86e17f4f421dec"
@@ -1642,6 +1658,14 @@ extsprintf@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.0.2.tgz#e1080e0658e300b06294990cc70e1502235fd550"
 
+fast-json-parse@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/fast-json-parse/-/fast-json-parse-1.0.2.tgz#3fb1ca12db68a85933612cc3fab4d7060cfff1d7"
+
+fast-safe-stringify@^1.0.8, fast-safe-stringify@^1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-1.1.11.tgz#64aa17438bd512568e97d407410b6339b57c577f"
+
 fd-slicer@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/fd-slicer/-/fd-slicer-1.0.1.tgz#8b5bcbd9ec327c5041bf9ab023fd6750f1177e65"
@@ -1704,6 +1728,10 @@ find-up@^2.0.0:
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-2.1.0.tgz#45d1b7e506c717ddd482775a2b77920a3c0c57a7"
   dependencies:
     locate-path "^2.0.0"
+
+flatstr@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/flatstr/-/flatstr-1.0.4.tgz#b4477b7cb3377f2b63b0ede78824eb5f99ffcd74"
 
 fn-name@^2.0.0:
   version "2.0.1"
@@ -2864,7 +2892,7 @@ on-finished@~2.3.0:
   dependencies:
     ee-first "1.1.1"
 
-once@^1.3.0, once@^1.3.3:
+once@^1.3.0, once@^1.3.1, once@^1.3.3, once@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   dependencies:
@@ -3055,6 +3083,18 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
+pino@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/pino/-/pino-4.2.2.tgz#80f382ad29d7ce9aaf3ad964fc870a98c46703f8"
+  dependencies:
+    chalk "^1.1.1"
+    fast-json-parse "^1.0.0"
+    fast-safe-stringify "^1.1.11"
+    flatstr "^1.0.4"
+    pump "^1.0.2"
+    quick-format-unescaped "^1.0.0"
+    split2 "^2.0.1"
+
 pkg-conf@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/pkg-conf/-/pkg-conf-2.0.0.tgz#071c87650403bccfb9c627f58751bfe47c067279"
@@ -3157,6 +3197,13 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
 
+pump@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/pump/-/pump-1.0.2.tgz#3b3ee6512f94f0e575538c17995f9f16990a5d51"
+  dependencies:
+    end-of-stream "^1.1.0"
+    once "^1.3.1"
+
 punycode@1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
@@ -3176,6 +3223,12 @@ querystring-es3@^0.2.0:
 querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
+
+quick-format-unescaped@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/quick-format-unescaped/-/quick-format-unescaped-1.1.0.tgz#9b6f3e200a83ff572966ce110372edbabe1c660c"
+  dependencies:
+    fast-safe-stringify "^1.0.8"
 
 randomatic@^1.1.3:
   version "1.1.6"
@@ -3826,9 +3879,9 @@ typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.1.tgz#4862b662b988a4c8ff691cc7969622d24db76ae9"
+typescript@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c"
 
 uglify-js@^2.8.5:
   version "2.8.16"

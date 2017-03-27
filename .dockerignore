@@ -5,3 +5,4 @@ dist
 .serverless
 .env
 node_modules
+.webpack
