@@ -1,6 +1,7 @@
 
 import * as P from 'bluebird';
 import * as Nightmare from 'nightmare';
+import * as pino from 'pino';
 
 const CODEWARS_URL = 'https://www.codewars.com';
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
@@ -31,17 +32,22 @@ const grabKatas = (userName: string, solvedKataSelector: string, totalKatasSelec
 
 export const scrape_katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {
+        const logger = pino();
+        
         yield nightmare
             .useragent(USER_AGENT)
             .viewport(VIEWPORT.width, VIEWPORT.height)
             .goto(`${CODEWARS_URL}/users/${userName}/completed`)
             .wait('#shell_content')
             .scrollTo(0, 0);
+    
+        logger.info('Init nightmare');
 
         const isScroll = yield nightmare
             .evaluate(() => document.querySelectorAll('.js-infinite-marker').length === 1);
 
         if (isScroll) {
+            logger.info('Scrolling');
             let previousHeight;
             let currentHeight = 0;
             while (previousHeight !== currentHeight) {
@@ -53,6 +59,7 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
                     .wait(LOADING_TIMEOUT);
             }
         }
+        logger.info('Get result');
         return yield nightmare
             .evaluate(grabKatas, userName, '.list-item.kata .item-title a', '.has-tip.tip-right.is-active a')
             .end();
