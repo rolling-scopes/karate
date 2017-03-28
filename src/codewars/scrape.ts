@@ -33,6 +33,7 @@ const grabKatas = (userName: string, solvedKataSelector: string, totalKatasSelec
 export const scrape_katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {
         const logger = pino();
+        logger.info('Init nightmare');
         
         yield nightmare
             .useragent(USER_AGENT)
@@ -40,8 +41,6 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
             .goto(`${CODEWARS_URL}/users/${userName}/completed`)
             .wait('#shell_content')
             .scrollTo(0, 0);
-    
-        logger.info('Init nightmare');
 
         const isScroll = yield nightmare
             .evaluate(() => document.querySelectorAll('.js-infinite-marker').length === 1);

@@ -6,8 +6,8 @@ WORKDIR /app
 
 COPY . /app
 
-RUN npm install -g serverless@1.9.0
+RUN yarn global add serverless@1.9.0
 
-RUN npm install
+RUN yarn
 
 CMD ["sls", "deploy"]
