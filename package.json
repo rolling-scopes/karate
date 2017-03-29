@@ -16,14 +16,13 @@
   },
   "devDependencies": {
     "@types/node": "^7.0.11",
-    "@types/pino": "^3.0.1",
     "ava": "^0.18.2",
     "awesome-typescript-loader": "^3.1.2",
     "babili-webpack-plugin": "0.0.11",
     "serverless-google-cloudfunctions": "^1.0.0",
     "serverless-webpack": "https://github.com/elastic-coders/serverless-webpack.git",
     "typescript": "^2.2.2",
-    "webpack": "^2.3.1",
+    "webpack": "^2.3.2",
     "webpack-node-externals": "^1.5.4"
   },
   "ava": {

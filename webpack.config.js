@@ -13,7 +13,11 @@ module.exports = {
         filename: 'index.js'
     },
     target: 'node',
-    externals: [nodeExternals()],
+    externals: [nodeExternals({
+        whitelist: [
+            'bluebird'
+        ]
+    })],
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         modules: ['node_modules']

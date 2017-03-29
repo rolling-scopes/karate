@@ -6,8 +6,7 @@ export const scrape_katas = (req, res) => {
   return P.resolve()
     .then(() => {
       if (req.method !== 'POST') {
-        const error = new Error('Only POST requests are accepted');
-        throw error;
+        return P.reject(new Error('Only POST requests are accepted'));
       }
 
       const { username } = req.body;
@@ -15,16 +14,14 @@ export const scrape_katas = (req, res) => {
       console.log(username);
 
       if (!username) {
-        const error = new Error('username is empty');
-        throw error;
+        return P.reject(new Error('username is empty'));
       }
 
       return codewars.scrape_katas(username)
     })
     .then(data => res.json({ data }))
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send(err);
-      return P.reject(err);
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: error.message });
     });
 };
