@@ -1,0 +1,24 @@
+{
+	"version": "2.2.1",
+	"compilerOptions": {
+		"target": "es2015",
+		"module": "es2015",
+		"allowJs": false,
+		"moduleResolution": "node",
+		"preserveConstEnums": true,
+		"declaration": true,
+		"outDir": "./dist/",
+		"sourceMap": true,
+		"lib": [
+			"es6",
+			"es7",
+			"dom"
+		],
+		"noUnusedLocals": true,
+		"strictNullChecks": false,
+		"removeComments": false
+	},
+	"include": [
+		"src/**/*"
+  	]
+}

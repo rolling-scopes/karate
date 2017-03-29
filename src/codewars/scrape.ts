@@ -8,7 +8,7 @@ const VIEWPORT = {
     width: 1024,
     height: 1024
 };
-const LOADING_TIMEOUT = 2000;
+const LOADING_TIMEOUT = 5000;
 const SELECTORS = {
     loaderMarker: '.js-infinite-marker',
     solvedKatas: '.list-item.kata .item-title a',
