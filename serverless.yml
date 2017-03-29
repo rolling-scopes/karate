@@ -15,6 +15,7 @@ custom:
 functions:
   codewars:
     memorySize: 1024
+    timeout: 360s
     handler: scrape_katas
     events:
-      - http: /katas
+      - http: path

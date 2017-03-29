@@ -2,6 +2,7 @@
 .serverless
 dist
 .webpack
+.env
 node_modules
 npm-debug.log
 project.yml

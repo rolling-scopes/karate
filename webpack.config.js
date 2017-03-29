@@ -6,16 +6,14 @@ const nodeExternals = require('webpack-node-externals');
 const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/handler.ts',
     output: {
         libraryTarget: 'commonjs',
         path: path.join(__dirname, '.webpack'),
         filename: 'index.js'
     },
     target: 'node',
-    externals: [nodeExternals({
-        whitelist: ['bluebird']
-    })],
+    externals: [nodeExternals()],
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         modules: ['node_modules']
