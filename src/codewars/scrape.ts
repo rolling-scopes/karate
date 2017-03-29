@@ -53,16 +53,14 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
 
         yield page.evaluate(scrollTo, 0);
 
-        const isNotKatas = yield page
-            .evaluate(hasNotKatas, SELECTORS.solvedKatas);
+        const isNotKatas = yield page.evaluate(hasNotKatas, SELECTORS.solvedKatas);
         
         if (isNotKatas) {
             yield instance.exit();
             throw new Error('User doesn"t have katas');
         }
 
-        const isScroll = yield page
-            .evaluate(isLoader, SELECTORS.loaderMarker);
+        const isScroll = yield page.evaluate(isLoader, SELECTORS.loaderMarker);
         
         if (isScroll) {
             console.log('Scrolling');
@@ -71,18 +69,18 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
             let currentHeight = 0;
             while (previousHeight !== currentHeight) {
                 previousHeight = currentHeight;
-                currentHeight = yield page
-                    .evaluate(getPageHeight);
-                yield page
-                    .evaluate(scrollTo, currentHeight);
+                currentHeight = yield page.evaluate(getPageHeight);
+
+                yield page.evaluate(scrollTo, currentHeight);
+
                 yield P.delay(LOADING_TIMEOUT);
             }
         }
 
         console.log('Get result');
 
-        const res = yield page
-            .evaluate(grabKatas, userName, SELECTORS.solvedKatas, SELECTORS.totalKatas);
+        const res = yield page.evaluate(grabKatas, userName, SELECTORS.solvedKatas, SELECTORS.totalKatas);
+        
         yield instance.exit();
 
         return res;
