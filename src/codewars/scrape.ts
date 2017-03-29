@@ -8,7 +8,7 @@ const VIEWPORT = {
     width: 1024,
     height: 1024
 };
-const LOADING_TIMEOUT = 300;
+const LOADING_TIMEOUT = 2000;
 const SELECTORS = {
     loaderMarker: '.js-infinite-marker',
     solvedKatas: '.list-item.kata .item-title a',
@@ -48,8 +48,6 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
         ];
   
         yield page.open(`${CODEWARS_URL}/users/${userName}/completed`);
-
-        yield P.delay(LOADING_TIMEOUT);
 
         yield page.evaluate(scrollTo, 0);
 
