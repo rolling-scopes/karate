@@ -1,27 +1,49 @@
 
 import * as P from 'bluebird';
 import * as codewars from './codewars/scrape';
+import * as duolingo from './duolingo/scrape';
+import { createResponse } from './utils';
+import logger from './logger';
 
-export const scrape_katas = (req, res) => {
-  return P.resolve()
-    .then(() => {
-      if (req.method !== 'POST') {
-        return P.reject(new Error('Only POST requests are accepted'));
-      }
+const parseUserName = evt =>
+  P.attempt(() => {
+    const body = JSON.parse(evt.body);
 
-      const { username } = req.body;
+    if (!body) {
+      throw new Error('body is empty');
+    }
 
-      console.log(username);
+    const { username } = body;
 
-      if (!username) {
-        return P.reject(new Error('username is empty'));
-      }
+    if (!username) {
+      throw new Error('username is empty');
+    }
 
-      return codewars.scrape_katas(username)
-    })
-    .then(data => res.json({ data }))
+    return username;
+  });
+
+export const scrape_katas = (evt, ctx, cb) =>
+  parseUserName(evt)
+    .then(username => codewars.scrape_katas(username))
+    .tap(data => logger.info('User', data))
+    .then(data => cb(null, createResponse({ body: { data, error: null } })))
     .catch((error) => {
-      console.error(error);
-      res.status(500).json({ error: error.message });
+      logger.error(error);
+      return cb(null, createResponse({
+        body: { data: null, error: error.message || error },
+        statusCode: 403,
+      }));
     });
-};
+
+export const scrape_duolingo = (evt, ctx, cb) =>
+  parseUserName(evt)
+    .then(username => duolingo.scrape_profile(username))
+    .tap(data => logger.info('User', data))
+    .then(data => cb(null, createResponse({ body: { data, error: null } })))
+    .catch((error) => {
+      logger.error(error);
+      return cb(null, createResponse({
+        body: { data: null, error: error.message || error },
+        statusCode: 403,
+      }));
+    });

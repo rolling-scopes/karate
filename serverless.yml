@@ -1,21 +1,36 @@
 service: karate
 
+frameworkVersion: ">=1.13.2 <2.0.0"
+
 provider:
-  name: google
-  runtime: nodejs
-  project: ${file(./project.yml):project}
-  credentials: .gcloud/keyfile.json
+  name: aws
+  stage: dev
+  runtime: nodejs6.10
+  region: eu-west-1
 
 plugins:
-  - serverless-google-cloudfunctions
   - serverless-webpack
+
 custom:
   webpackIncludeModules: true
 
 functions:
-  codewars:
+  codewarsKatas:
+    handler: handler.scrape_katas
     memorySize: 512
-    timeout: 480s
-    handler: scrape_katas
+    timeout: 300
     events:
-      - http: path
+      - http:
+          path: scrape/codewars/katas
+          method: post
+          cors: true
+
+  duolingoProfile:
+    handler: handler.scrape_duolingo
+    memorySize: 512
+    timeout: 300
+    events:
+      - http:
+          path: scrape/duolingo/profile
+          method: post
+          cors: true

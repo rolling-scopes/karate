@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN yarn global add serverless@1.10.0
+RUN yarn global add serverless@1.14.0
 
 RUN yarn
 

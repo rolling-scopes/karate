@@ -1,24 +1,19 @@
 {
-	"version": "2.2.1",
 	"compilerOptions": {
-		"target": "es2015",
+		"outDir": "./dist/",
+		"target": "es6",
 		"module": "commonjs",
-		"allowJs": false,
 		"moduleResolution": "node",
 		"preserveConstEnums": true,
-		"declaration": true,
-		"outDir": "./dist/",
-		"sourceMap": true,
+		"noUnusedLocals": true,
+		"removeComments": true,
 		"lib": [
 			"es6",
-			"es7",
+			"es2016",
 			"dom"
-		],
-		"noUnusedLocals": true,
-		"strictNullChecks": false,
-		"removeComments": false
+		]
 	},
 	"include": [
 		"src/**/*"
-  	]
+  ]
 }
