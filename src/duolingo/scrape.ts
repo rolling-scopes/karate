@@ -19,13 +19,19 @@ export interface Profile {
   languages: Language[];
 }
 
-function grabLanguages(): Language {
-  return Array.prototype.slice.call(document.querySelectorAll('.profile-language'))
+const SELECTORS = {
+  profileLanguage: '.profile-language',
+  languageNameSelector: '.language-name',
+  statSelector: '.substat'
+};
+
+function grabLanguages(profileSelector, languageNameSelector, statSelector): Language {
+  return Array.prototype.slice.call(document.querySelectorAll(profileSelector))
     .map(function (language) {
       return {
-        name: language.querySelector('.language-name').innerHTML,
-        nextLevel: language.querySelectorAll('.substat')[0].innerHTML,
-        total: language.querySelectorAll('.substat')[1].innerHTML,
+        name: language.querySelector(languageNameSelector).innerHTML,
+        nextLevel: language.querySelectorAll(statSelector)[0].innerHTML,
+        total: language.querySelectorAll(statSelector)[1].innerHTML,
       };
     });
 };
@@ -45,7 +51,12 @@ export const scrape_profile = (userName: string) : Promise<Profile> =>
 
     yield P.delay(3000);
 
-    const languages = yield page.evaluate(grabLanguages);
+    const languages = yield page.evaluate(
+      grabLanguages,
+      SELECTORS.profileLanguage,
+      SELECTORS.languageNameSelector,
+      SELECTORS.statSelector,
+    );
 
     console.log(languages);
 
