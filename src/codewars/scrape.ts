@@ -69,7 +69,7 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
           previousHeight = currentHeight;
           currentHeight = yield page.evaluate(getPageHeight);
           yield page.evaluate(scrollTo, currentHeight + 200);
-          yield P.delay(4000);
+          yield P.delay(5000);
         }
       }
 
