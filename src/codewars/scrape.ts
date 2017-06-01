@@ -13,6 +13,7 @@ const SELECTORS = {
   solvedKatas: '.list-item.kata .item-title a',
   totalKatas: '.has-tip.tip-right.is-active a',
 };
+const LOADING_TIMEOUT = 5000;
 
 export interface KatasScore {
   userName: string;
@@ -69,7 +70,7 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
           previousHeight = currentHeight;
           currentHeight = yield page.evaluate(getPageHeight);
           yield page.evaluate(scrollTo, currentHeight + 200);
-          yield P.delay(5000);
+          yield P.delay(LOADING_TIMEOUT);
         }
       }
 
