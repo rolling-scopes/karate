@@ -10,7 +10,7 @@ module.exports = {
     output: {
         libraryTarget: 'commonjs',
         path: path.join(__dirname, '.webpack'),
-        filename: 'handler.js'
+        filename: 'index.js'
     },
     target: 'node',
     externals: [nodeExternals({

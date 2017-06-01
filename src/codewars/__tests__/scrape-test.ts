@@ -9,11 +9,11 @@ test('Codewars -> katas', async (t) => {
   t.true(res.solved.indexOf('multiply') !== -1);
 });
 
-// test('Codewars -> not katas', async (t) => {
-//     try {
-//         await scrape_katas('h1');
-//         t.fail();
-//     } catch(e) {
-//         t.pass();
-//     }
-// });
+test('Codewars -> not katas', async (t) => {
+  try {
+    await scrape_katas('h1');
+    t.fail();
+  } catch(e) {
+    t.pass();
+  }
+});

@@ -2,18 +2,15 @@
 import * as P from 'bluebird';
 import * as codewars from './codewars/scrape';
 import * as duolingo from './duolingo/scrape';
-import { createResponse } from './utils';
 import logger from './logger';
 
-const parseUserName = evt =>
+const parseUserName = req =>
   P.attempt(() => {
-    const body = JSON.parse(evt.body);
-
-    if (!body) {
-      throw new Error('body is empty');
+    if (req.method !== 'POST') {
+      throw new Error('Only POST requests are accepted');
     }
 
-    const { username } = body;
+    const { username } = req.body;
 
     if (!username) {
       throw new Error('username is empty');
@@ -22,28 +19,37 @@ const parseUserName = evt =>
     return username;
   });
 
-export const scrape_katas = (evt, ctx, cb) =>
-  parseUserName(evt)
+
+export const scrape_katas = (req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res
+      .set('Access-Control-Allow-Origin', '*')
+      .set('Access-Control-Allow-Methods', 'GET, POST')
+      .status(200);
+  }
+  return parseUserName(req)
     .then(username => codewars.scrape_katas(username))
     .tap(data => logger.info('User', data))
-    .then(data => cb(null, createResponse({ body: { data, error: null } })))
+    .then(data => res.json({ data }))
     .catch((error) => {
       logger.error(error);
-      return cb(null, createResponse({
-        body: { data: null, error: error.message || error },
-        statusCode: 403,
-      }));
+      res.status(403).json({ error: error.message || error });
     });
+};
 
-export const scrape_duolingo = (evt, ctx, cb) =>
-  parseUserName(evt)
+export const scrape_duolingo = (req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res
+      .set('Access-Control-Allow-Origin', '*')
+      .set('Access-Control-Allow-Methods', 'GET, POST')
+      .status(200);
+  }
+  return parseUserName(req)
     .then(username => duolingo.scrape_profile(username))
     .tap(data => logger.info('User', data))
-    .then(data => cb(null, createResponse({ body: { data, error: null } })))
+    .then(data => res.json({ data }))
     .catch((error) => {
       logger.error(error);
-      return cb(null, createResponse({
-        body: { data: null, error: error.message || error },
-        statusCode: 403,
-      }));
+      res.status(403).json({ error: error.message || error });
     });
+};

@@ -1,10 +1,14 @@
 
 import test from 'ava';
-import * as scrape from '../scrape';
-
-const { scrape_profile } = scrape;
+import { scrape_profile } from '../scrape';
 
 test('Duolingo -> profile', async (t) => {
   const res = await scrape_profile('siarheimel');
-  t.true(res);
+  t.is(res, { userName: 'siarheimel', languages:[
+    {
+      name: 'English - Level 5',
+      nextLevel: 'Next level: 40 XP',
+      total: 'Total XP: 410 XP',
+    },
+  ]});
 });

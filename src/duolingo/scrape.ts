@@ -22,24 +22,30 @@ export interface Profile {
 const SELECTORS = {
   profileLanguage: '.profile-language',
   languageNameSelector: '.language-name',
-  statSelector: '.substat'
+  statSelector: '.substat',
+  profile: '.profile-header-username',
 };
 
 function grabLanguages(profileSelector, languageNameSelector, statSelector): Language {
   return Array.prototype.slice.call(document.querySelectorAll(profileSelector))
-    .map(function (language) {
+    .map(function(language) {
       return {
         name: language.querySelector(languageNameSelector).innerHTML,
         nextLevel: language.querySelectorAll(statSelector)[0].innerHTML,
         total: language.querySelectorAll(statSelector)[1].innerHTML,
       };
     });
-};
+}
+
+// function hasProfile(profileHeader) : boolean {
+//   return document.querySelectorAll(profileHeader).length === 1;
+// }
 
 export const scrape_profile = (userName: string) : Promise<Profile> =>
   P.coroutine(function * () {
     console.log('Init Scraper');
-    const instance = yield Phantom.create(['--ignore-ssl-errors=true']);
+
+    const instance = yield Phantom.create(['--ignore-ssl-errors=true', '--load-images=no']);
     const page = yield instance.createPage();
 
     yield P.all([
@@ -48,8 +54,14 @@ export const scrape_profile = (userName: string) : Promise<Profile> =>
     ]);
 
     yield page.open(`${DUOLINGO}/${userName}`);
-
     yield P.delay(3000);
+
+    // const knownUser = yield page.evaluate(hasProfile, SELECTORS.profile);
+    //
+    // if (!knownUser) {
+    //   yield instance.exit();
+    //   throw new Error('User doesn"t have profile');
+    // }
 
     const languages = yield page.evaluate(
       grabLanguages,
@@ -58,9 +70,7 @@ export const scrape_profile = (userName: string) : Promise<Profile> =>
       SELECTORS.statSelector,
     );
 
-    console.log(languages);
-
     yield instance.exit();
 
     return { userName, languages };
-  });
+  })();
