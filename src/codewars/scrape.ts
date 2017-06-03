@@ -62,7 +62,6 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
         return P.coroutine(function * () {
           const katas = yield page.evaluate(grabKatas, SELECTORS.solvedKatas);
           if (katas.indexOf('multiply') !== -1) return;
-          console.log('Scroll');
           const pageHeight = yield page.evaluate(getPageHeight);
           yield page.evaluate(scrollTo, pageHeight);
           yield P.delay(100);
@@ -76,8 +75,6 @@ export const scrape_katas = (userName: string) : Promise<KatasScore> =>
         page.evaluate(grabTotal, SELECTORS.totalKatas),
         page.evaluate(grabKatas, SELECTORS.solvedKatas),
       ]);
-
-      console.log(solved);
 
       yield instance.exit();
 
