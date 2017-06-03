@@ -24,7 +24,7 @@ export const scrape_katas = (req, res) => {
   if (req.method === 'OPTIONS') {
     return res
       .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'GET, POST')
+      .set('Access-Control-Allow-Methods', 'POST')
       .status(200);
   }
   return parseUserName(req)
@@ -41,7 +41,7 @@ export const scrape_duolingo = (req, res) => {
   if (req.method === 'OPTIONS') {
     return res
       .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'GET, POST')
+      .set('Access-Control-Allow-Methods', 'POST')
       .status(200);
   }
   return parseUserName(req)
