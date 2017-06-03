@@ -16,11 +16,11 @@ const SELECTORS = {
 
 export interface KatasScore {
   userName: string;
-  solved:string[];
+  solved: string[];
   total: number;
 }
 
-function grabKatas(solvedKataSelector: string) : Array<string> {
+function grabKatas(solvedKataSelector: string) : string[] {
   return Array.prototype.slice.call(document.querySelectorAll(solvedKataSelector))
     .map(function(el: HTMLElement) { return el.innerHTML; })
     .map(function(text: string) { return text.toLowerCase().trim(); });

@@ -6,7 +6,7 @@ const nodeExternals = require('webpack-node-externals');
 const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
-    entry: './src/handler.ts',
+    entry: './src/index.ts',
     output: {
         libraryTarget: 'commonjs',
         path: path.join(__dirname, '.webpack'),

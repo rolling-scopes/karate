@@ -27,7 +27,7 @@ const SELECTORS = {
 
 function grabLanguages(profileSelector, languageNameSelector, statSelector): Language {
   return Array.prototype.slice.call(document.querySelectorAll(profileSelector))
-    .map(function(l) {
+    .map(function(l: HTMLElement) {
       return {
         name: l.querySelector(languageNameSelector).innerHTML,
         nextLevel: l.querySelectorAll(statSelector)[0].innerHTML,
