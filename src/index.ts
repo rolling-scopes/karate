@@ -1,7 +1,7 @@
 
 import * as P from 'bluebird';
-import * as codewars from './codewars/scrape';
-import * as duolingo from './duolingo/scrape';
+import * as codewars from './handlers/codewars/scrape';
+import * as duolingo from './handlers/duolingo/scrape';
 import logger from './logger';
 
 const parseUserName = req =>
@@ -19,7 +19,6 @@ const parseUserName = req =>
     return username;
   });
 
-
 export const scrape_katas = (req, res) => {
   if (req.method === 'OPTIONS') {
     return res
@@ -27,6 +26,7 @@ export const scrape_katas = (req, res) => {
       .set('Access-Control-Allow-Methods', 'POST')
       .status(200);
   }
+
   return parseUserName(req)
     .then(username => codewars.scrape_katas(username))
     .tap(data => logger.info('User', data))
@@ -44,6 +44,7 @@ export const scrape_duolingo = (req, res) => {
       .set('Access-Control-Allow-Methods', 'POST')
       .status(200);
   }
+
   return parseUserName(req)
     .then(username => duolingo.scrape_profile(username))
     .tap(data => logger.info('User', data))

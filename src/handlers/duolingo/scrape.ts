@@ -8,6 +8,12 @@ const VIEWPORT = {
   width: 1024,
   height: 768,
 };
+const SELECTORS = {
+  profileLanguage: '.profile-language',
+  languageNameSelector: '.language-name',
+  statSelector: '.substat',
+};
+
 export interface Language {
   name: string;
   nextLevel: string;
@@ -19,15 +25,9 @@ export interface Profile {
   languages: Language[];
 }
 
-const SELECTORS = {
-  profileLanguage: '.profile-language',
-  languageNameSelector: '.language-name',
-  statSelector: '.substat',
-};
-
 function grabLanguages(profileSelector, languageNameSelector, statSelector): Language {
   return Array.prototype.slice.call(document.querySelectorAll(profileSelector))
-    .map(function(l) {
+    .map(function(l: HTMLElement) {
       return {
         name: l.querySelector(languageNameSelector).innerHTML,
         nextLevel: l.querySelectorAll(statSelector)[0].innerHTML,
@@ -38,8 +38,6 @@ function grabLanguages(profileSelector, languageNameSelector, statSelector): Lan
 
 export const scrape_profile = (userName: string) : Promise<Profile> =>
   P.coroutine(function * () {
-    console.log('Init Scraper');
-
     const instance = yield Phantom.create(['--ignore-ssl-errors=true', '--load-images=no']);
     const page = yield instance.createPage();
 
