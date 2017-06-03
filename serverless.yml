@@ -9,6 +9,8 @@ provider:
   timeout: 480s
   project: ${file(./project.yml):project}
   credentials: .gcloud/keyfile.json
+  environment:
+    CHROME_PATH: ./headless_chrome/headless_shell
 
 plugins:
   - serverless-google-cloudfunctions
@@ -25,5 +27,10 @@ functions:
 
   duolingoProfile:
     handler: scrape_duolingo
+    events:
+      - http: path
+
+  testHeadless:
+    handler: test_headless
     events:
       - http: path

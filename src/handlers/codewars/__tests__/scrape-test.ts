@@ -5,7 +5,7 @@ import * as scrape from '../scrape';
 const { scrape_katas } = scrape;
 
 test('Codewars -> katas', async (t) => {
-  const res = await scrape_katas('telukigor');
+  const res = await scrape_katas('SiarheiMelnik');
   t.true(res.solved.indexOf('multiply') !== -1);
 });
 
