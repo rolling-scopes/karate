@@ -24,13 +24,15 @@ function grabKatas(solvedKataSelector: string) : string[] {
   return Array.prototype.slice.call(document.querySelectorAll(solvedKataSelector))
     .map(function(el: HTMLElement) { return el.innerHTML; })
     .map(function(text: string) { return text.toLowerCase().trim(); });
-};
+}
 function grabTotal(totalKatasSelector: string) : number {
   return +/\((.*?)\)/gi.exec(document.querySelector(totalKatasSelector).innerHTML)[1];
-};
+}
 function getPageHeight(): number { return document.body.scrollHeight; }
 function scrollTo(height): void { return document.body.scrollTop = height; }
-function hasNotKatas(katasSelector): boolean { return document.querySelectorAll(katasSelector).length === 0; };
+function hasNotKatas(katasSelector): boolean {
+  return document.querySelectorAll(katasSelector).length === 0;
+}
 
 export const scrape_katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {

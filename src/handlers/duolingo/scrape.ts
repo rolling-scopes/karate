@@ -8,6 +8,12 @@ const VIEWPORT = {
   width: 1024,
   height: 768,
 };
+const SELECTORS = {
+  profileLanguage: '.profile-language',
+  languageNameSelector: '.language-name',
+  statSelector: '.substat',
+};
+
 export interface Language {
   name: string;
   nextLevel: string;
@@ -18,12 +24,6 @@ export interface Profile {
   userName: string;
   languages: Language[];
 }
-
-const SELECTORS = {
-  profileLanguage: '.profile-language',
-  languageNameSelector: '.language-name',
-  statSelector: '.substat',
-};
 
 function grabLanguages(profileSelector, languageNameSelector, statSelector): Language {
   return Array.prototype.slice.call(document.querySelectorAll(profileSelector))
