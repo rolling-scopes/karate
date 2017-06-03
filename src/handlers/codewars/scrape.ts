@@ -36,7 +36,6 @@ function hasNotKatas(katasSelector): boolean {
 
 export const scrape_katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {
-      console.log('Init Scraper');
       const instance = yield Phantom.create(['--ignore-ssl-errors=true', '--load-images=no']);
       const page = yield instance.createPage();
 

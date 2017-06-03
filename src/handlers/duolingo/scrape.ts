@@ -38,8 +38,6 @@ function grabLanguages(profileSelector, languageNameSelector, statSelector): Lan
 
 export const scrape_profile = (userName: string) : Promise<Profile> =>
   P.coroutine(function * () {
-    console.log('Init Scraper');
-
     const instance = yield Phantom.create(['--ignore-ssl-errors=true', '--load-images=no']);
     const page = yield instance.createPage();
 
