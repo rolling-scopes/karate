@@ -5,7 +5,7 @@ import { scrape_profile } from '../scrape';
 test('Duolingo -> profile', async (t) => {
   try {
     const res = await scrape_profile('siarheimel');
-    t.is(res, { userName: 'siarheimel', languages:[
+    t.is(res, { userName: 'siarheimel', languages: [
       {
         name: 'English - Level 5',
         nextLevel: 'Next level: 40 XP',
