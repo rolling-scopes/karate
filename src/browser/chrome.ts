@@ -24,7 +24,7 @@ const flags = [
   '--disk-cache-dir=/tmp/cache-dir',
 ];
 
-// chrome-canary --headless --disable-gpu --remote-debugging-port=9222 --hide-scrollbars --enable-logging --log-level=0 --v=99 --single-process
+// chrome-canary --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 --hide-scrollbars --enable-logging --log-level=0 --v=99 --single-process
 export default function spawn() {
   const chrome = cp.spawn(
     CHROME_PATH,

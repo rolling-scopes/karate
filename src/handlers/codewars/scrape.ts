@@ -5,7 +5,6 @@ import * as scrapper from '../../scrapper';
 const CODEWARS_URL = 'https://www.codewars.com';
 const SELECTORS = {
   solvedKatas: '.list-item.kata .item-title a',
-  totalKatas: '.tabs.is-vertical .is-active a',
 };
 
 export interface KatasScore {
@@ -14,17 +13,13 @@ export interface KatasScore {
   total: number;
 }
 
-function grabCompletedKatas(solvedKataSelector, totalKatasSelector) {
+function grabCompletedKatas(solvedKataSelector) {
   return `
     const d = new Promise((resolve, reject) => {
       const grabKatas = solvedKataSelector =>
         [...document.querySelectorAll(solvedKataSelector)]
           .map(el => el.innerHTML)
           .map(text => text.toLowerCase().trim());
-
-      const grabTotal = totalKatasSelector =>
-        ${new RegExp(/\d+/g)}.exec(document.querySelector('${totalKatasSelector}').innerHTML)[0];
-
       const getPageHeight = () => document.body.scrollHeight;
 
       const scrollTo = height => document.body.scrollTop = height;
@@ -53,8 +48,7 @@ function grabCompletedKatas(solvedKataSelector, totalKatasSelector) {
         waitUntilMultiplyIsReady()
           .then(() => {
             const solved = grabKatas('${solvedKataSelector}');
-            const total = grabTotal('${totalKatasSelector}');
-            resolve({ total, solved });
+            resolve(solved);
           });
     });
     d.then(res => JSON.stringify(res));
@@ -64,12 +58,10 @@ function grabCompletedKatas(solvedKataSelector, totalKatasSelector) {
 export const katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {
       const url = `${CODEWARS_URL}/users/${userName}/completed`;
-      const exp = grabCompletedKatas(
-        SELECTORS.solvedKatas,
-        SELECTORS.totalKatas,
-      );
-      const res = yield scrapper.scrape(url, exp, true);
-      const data = JSON.parse(res.result.value);
+      const exp = grabCompletedKatas(SELECTORS.solvedKatas);
 
-      return { userName, ...data };
+      const res = yield scrapper.scrape(url, exp, true);
+      const solved = JSON.parse(res.result.value);
+
+      return { userName, solved, total: solved.length };
     })();

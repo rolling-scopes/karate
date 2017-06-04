@@ -4,6 +4,5 @@ import * as scrape from '../scrape';
 
 test('Codewars -> katas', async (t) => {
   const res = await scrape.katas('SiarheiMelnik');
-  console.log(res);
-  t.is(1, 1);
+  t.is(res.solved.indexOf('multiply') !== -1, true);
 });
