@@ -39,7 +39,7 @@ function grabCompletedKatas(solvedKataSelector) {
 
           if (katas.indexOf('multiply') !== -1) return resolve();
 
-          scrollTo(getPageHeight());
+          scrollTo(getPageHeight() + 200);
 
           delay(100)
             .then(() => waitUntilMultiplyIsReady().then(resolve));
@@ -60,8 +60,8 @@ export const katas = (userName: string) : Promise<KatasScore> =>
       const url = `${CODEWARS_URL}/users/${userName}/completed`;
       const exp = grabCompletedKatas(SELECTORS.solvedKatas);
 
-      const res = yield scrapper.scrape(url, exp, true);
-      const solved = JSON.parse(res.result.value);
+      const result = yield scrapper.scrape(url, exp, true);
+      const solved = JSON.parse(result.result.value);
 
       return { userName, solved, total: solved.length };
     })();
