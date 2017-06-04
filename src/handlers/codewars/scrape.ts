@@ -52,8 +52,8 @@ function grabCompletedKatas(solvedKataSelector, totalKatasSelector) {
 
         waitUntilMultiplyIsReady()
           .then(() => {
-            const total = grabTotal('${totalKatasSelector}');
             const solved = grabKatas('${solvedKataSelector}');
+            const total = grabTotal('${totalKatasSelector}');
             resolve({ total, solved });
           });
     });
