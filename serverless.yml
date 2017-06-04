@@ -11,6 +11,7 @@ provider:
   credentials: .gcloud/keyfile.json
   environment:
     CHROME_PATH: ./headless-chrome/headless_shell
+    SECRET_TOKEN: ${file(./project.yml):secret
 
 plugins:
   - serverless-google-cloudfunctions
@@ -27,10 +28,5 @@ functions:
 
   duolingoProfile:
     handler: scrape_duolingo
-    events:
-      - http: path
-
-  testHeadless:
-    handler: test_headless
     events:
       - http: path

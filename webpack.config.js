@@ -2,24 +2,8 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const decompress = require('decompress');
 const nodeExternals = require('webpack-node-externals');
 const BabiliPlugin = require('babili-webpack-plugin');
-
-const chromeTarball = path.join(__dirname, 'chrome/chrome-headless-lambda-linux-x64.tar.gz');
-const webpackDir = path.join(__dirname, '.webpack');
-
-function ExtractTarballPlugin (archive, to) {
-  return {
-    apply: (compiler) => {
-      compiler.plugin('emit', (compilation, callback) => {
-        decompress(path.resolve(archive), path.resolve(to))
-          .then(() => callback())
-          .catch(error => console.error('Unable to extract archive ', archive, to, error.stack))
-      });
-    },
-  };
-}
 
 module.exports = {
   entry: './src/index.ts',
@@ -53,6 +37,5 @@ module.exports = {
     }),
     new webpack.IgnorePlugin(/\.(css|html|json|md|txt)$/),
     // new BabiliPlugin(),
-    new ExtractTarballPlugin(chromeTarball, webpackDir),
   ]
 };

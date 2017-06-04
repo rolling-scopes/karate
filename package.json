@@ -11,6 +11,7 @@
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
   "dependencies": {
+    "@serverless-chrome/lambda": "^0.0.0-pre-release-4",
     "bluebird": "^3.5.0",
     "chrome-remote-interface": "^0.23.1",
     "phantom": "^4.0.3",
