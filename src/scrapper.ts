@@ -4,7 +4,8 @@ import * as CDP from 'chrome-remote-interface';
 
 export const scrape = (url, expression, awaitPromise = false) =>
   P.coroutine(function * (url, expression) {
-    const client = yield CDP();
+    const target = yield CDP.New();
+    const client = yield CDP({ target });
 
     const { Page, Runtime } = client;
 
@@ -24,7 +25,9 @@ export const scrape = (url, expression, awaitPromise = false) =>
     });
 
     const result = yield Runtime.evaluate({ expression, awaitPromise });
-    yield client.close();
+
+    const id = client.target.id;
+    yield CDP.Close({ id });
 
     return result;
   })(url, expression);
