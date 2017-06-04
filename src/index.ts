@@ -6,7 +6,7 @@ import logger from './logger';
 
 const parseUserName = req =>
   P.attempt(() => {
-    const { username } = req.body;
+    const { username } = JSON.parse(req.body);
 
     if (!username) {
       throw new Error('username is empty');
@@ -15,54 +15,38 @@ const parseUserName = req =>
     return username;
   });
 
-export const scrape_katas = (req, res) => {
-  if (req.method === 'OPTIONS') {
-    return res
-      .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'POST')
-      .status(200);
-  }
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+};
 
-  if (req.method !== 'POST') {
-    return res
-      .status(403)
-      .json({ error: 'Only POST requests are accepted' });
-  }
-
-  return parseUserName(req)
+export const scrape_katas = (evt, ctx, cb) =>
+  parseUserName(evt)
     .then(username => codewars.katas(username))
     .tap(data => logger.info('User', data))
-    .then(data => res.json({ data }))
+    .then(data => cb(null, {
+      headers,
+      body: JSON.stringify({ data }),
+    }))
     .catch((error) => {
       logger.error(error);
-      return res
-        .status(403)
-        .json({ error: error.message || error });
+      cb(null, {
+        headers,
+        body: JSON.stringify({ error }),
+      });
     });
-};
 
-export const scrape_duolingo = (req, res) => {
-  if (req.method === 'OPTIONS') {
-    return res
-      .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'POST')
-      .status(200);
-  }
-
-  if (req.method !== 'POST') {
-    return res
-      .status(403)
-      .json({ error: 'Only POST requests are accepted' });
-  }
-
-  return parseUserName(req)
+export const scrape_duolingo = (evt, ctx, cb) =>
+  parseUserName(evt)
     .then(username => duolingo.profile(username))
     .tap(data => logger.info('User', data))
-    .then(data => res.json({ data }))
+    .then(data => cb(null, {
+      headers,
+      body: JSON.stringify({ data }),
+    }))
     .catch((error) => {
       logger.error(error);
-      return res
-        .status(403)
-        .json({ error: error.message || error });
+      cb(null, {
+        headers,
+        body: JSON.stringify({ error }),
+      });
     });
-};
