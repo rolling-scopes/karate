@@ -56,7 +56,7 @@ export const scrape_duolingo = (req, res) => {
   }
 
   return parseUserName(req)
-    .then(username => duolingo.scrape_profile(username))
+    .then(username => duolingo.profile(username))
     .tap(data => logger.info('User', data))
     .then(data => res.json({ data }))
     .catch((error) => {

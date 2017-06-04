@@ -31,7 +31,7 @@ function grabLanguages(profileSelector, languageNameSelector, statSelector) {
   );`;
 }
 
-export const scrape_profile = (userName: string) : Promise<Profile> =>
+export const profile = (userName: string) : Promise<Profile> =>
   P.coroutine(function * () {
     const url = `${DUOLINGO}/${userName}`;
     const exp = grabLanguages(
@@ -40,8 +40,8 @@ export const scrape_profile = (userName: string) : Promise<Profile> =>
       SELECTORS.statSelector,
     );
 
-    const res = yield scrapper.scrape(url, exp);
-    const languages = JSON.parse(res.result.value);
+    const result = yield scrapper.scrape(url, exp);
+    const languages = JSON.parse(result.result.value);
 
     return { userName, languages };
   })();

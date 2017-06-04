@@ -32,7 +32,7 @@ export const scrape = (url, expression) =>
       });
     });
 
-    yield P.delay(4000);
+    yield P.delay(2000);
 
     const result = yield Runtime.evaluate({ expression });
 
