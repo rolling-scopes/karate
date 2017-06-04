@@ -4,8 +4,6 @@ import * as path from 'path';
 import * as cp from 'child_process';
 import * as P from 'bluebird';
 
-process.env.CHROME_PATH = '../../.webpack/headless-chrome/headless_shell';
-
 const CHROME_PATH = path.resolve(process.env.CHROME_PATH);
 
 const flags = [

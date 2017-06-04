@@ -1,8 +1,9 @@
 
 import * as P from 'bluebird';
+import * as CDP from 'chrome-remote-interface';
 import * as codewars from './handlers/codewars/scrape';
 import * as duolingo from './handlers/duolingo/scrape';
-import * as headless from './handlers/test/headless';
+import * as test from './handlers/headless/headless';
 import logger from './logger';
 
 const parseUserName = req =>
@@ -59,8 +60,6 @@ export const scrape_duolingo = (req, res) => {
 };
 
 export const test_headless = (req, res) => {
-  headless.test_cdp()
-    .then(() => {
-      res.json({ data: process.cwd() });
-    });
+  test.test_cdp('https://medium.com', `document.querySelector('.u-letterSpacingTight').innerText`)
+    .then(() => res.json({ data: CDP.version() }));
 };

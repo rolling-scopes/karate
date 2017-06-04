@@ -10,7 +10,7 @@ provider:
   project: ${file(./project.yml):project}
   credentials: .gcloud/keyfile.json
   environment:
-    CHROME_PATH: ./headless_chrome/headless_shell
+    CHROME_PATH: ./headless-chrome/headless_shell
 
 plugins:
   - serverless-google-cloudfunctions
