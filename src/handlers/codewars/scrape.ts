@@ -1,17 +1,11 @@
 
 import * as P from 'bluebird';
-import * as Phantom from 'phantom';
+import * as scrapper from '../../scrapper';
 
 const CODEWARS_URL = 'https://www.codewars.com';
-const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
-const VIEWPORT = {
-  width: 1024,
-  height: 10240,
-};
 const SELECTORS = {
-  loaderMarker: '.js-infinite-marker',
   solvedKatas: '.list-item.kata .item-title a',
-  totalKatas: '.has-tip.tip-right.is-active a',
+  totalKatas: '.tabs.is-vertical .is-active a',
 };
 
 export interface KatasScore {
@@ -20,64 +14,62 @@ export interface KatasScore {
   total: number;
 }
 
-function grabKatas(solvedKataSelector: string) : string[] {
-  return Array.prototype.slice.call(document.querySelectorAll(solvedKataSelector))
-    .map(function(el: HTMLElement) { return el.innerHTML; })
-    .map(function(text: string) { return text.toLowerCase().trim(); });
-}
-function grabTotal(totalKatasSelector: string) : number {
-  return +/\((.*?)\)/gi.exec(document.querySelector(totalKatasSelector).innerHTML)[1];
-}
-function getPageHeight(): number { return document.body.scrollHeight; }
-function scrollTo(height): void { return document.body.scrollTop = height; }
-function hasNotKatas(katasSelector): boolean {
-  return document.querySelectorAll(katasSelector).length === 0;
+function grabCompletedKatas(solvedKataSelector, totalKatasSelector) {
+  return `
+    const d = new Promise((resolve, reject) => {
+      const grabKatas = solvedKataSelector =>
+        [...document.querySelectorAll(solvedKataSelector)]
+          .map(el => el.innerHTML)
+          .map(text => text.toLowerCase().trim());
+
+      const grabTotal = totalKatasSelector =>
+        ${new RegExp(/\d+/g)}.exec(document.querySelector('${totalKatasSelector}').innerHTML)[0];
+
+      const getPageHeight = () => document.body.scrollHeight;
+
+      const scrollTo = height => document.body.scrollTop = height;
+
+      const hasNotKatas = solvedKataSelector =>
+        document.querySelectorAll(solvedKataSelector).length === 0;
+
+      const delay = timeout => new Promise(resolve => setTimeout(() => resolve(), timeout));
+
+      scrollTo(getPageHeight());
+
+      if (hasNotKatas('${solvedKataSelector}')) return reject(new Error('has not katas'));
+
+      const waitUntilMultiplyIsReady = () =>
+        new Promise((resolve) => {
+          const katas = grabKatas('${solvedKataSelector}');
+
+          if (katas.indexOf('multiply') !== -1) return resolve();
+
+          scrollTo(getPageHeight());
+
+          delay(100)
+            .then(() => waitUntilMultiplyIsReady().then(resolve));
+        });
+
+        waitUntilMultiplyIsReady()
+          .then(() => {
+            const total = grabTotal('${totalKatasSelector}');
+            const solved = grabKatas('${solvedKataSelector}');
+            resolve({ total, solved });
+          });
+    });
+    d.then(res => JSON.stringify(res));
+  `;
 }
 
-export const scrape_katas = (userName: string) : Promise<KatasScore> =>
+export const katas = (userName: string) : Promise<KatasScore> =>
     P.coroutine(function * () {
-      const instance = yield Phantom.create(['--ignore-ssl-errors=true', '--load-images=no']);
-      const page = yield instance.createPage();
+      const url = `${CODEWARS_URL}/users/${userName}/completed`;
+      const exp = grabCompletedKatas(
+        SELECTORS.solvedKatas,
+        SELECTORS.totalKatas,
+      );
+      const res = yield scrapper.scrape(url, exp, true);
+      const data = JSON.parse(res.result.value);
 
-      yield P.all([
-        page.property('viewportSize', VIEWPORT),
-        page.property('userAgent', USER_AGENT),
-      ]);
-
-      yield page.open(`${CODEWARS_URL}/users/${userName}/completed`);
-
-      yield P.delay(1000);
-
-      const bodyHeight = yield page.evaluate(getPageHeight);
-
-      yield page.evaluate(scrollTo, bodyHeight);
-
-      const isNotKatas = yield page.evaluate(hasNotKatas, SELECTORS.solvedKatas);
-
-      if (isNotKatas) {
-        yield instance.exit();
-        throw new Error('User doesn"t have katas');
-      }
-
-      const waitUntilMultiply = () => {
-        return P.coroutine(function * () {
-          const katas = yield page.evaluate(grabKatas, SELECTORS.solvedKatas);
-          if (katas.indexOf('multiply') !== -1) return;
-          const pageHeight = yield page.evaluate(getPageHeight);
-          yield page.evaluate(scrollTo, pageHeight);
-          yield P.delay(100);
-          yield waitUntilMultiply();
-        })();
-      };
-
-      yield waitUntilMultiply();
-
-      const [total, solved] = yield P.all([
-        page.evaluate(grabTotal, SELECTORS.totalKatas),
-        page.evaluate(grabKatas, SELECTORS.solvedKatas),
-      ]);
-
-      yield instance.exit();
-
-      return { solved, total, userName };
+      return { userName, ...data };
     })();

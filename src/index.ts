@@ -30,7 +30,7 @@ export const scrape_katas = (req, res) => {
   }
 
   return parseUserName(req)
-    .then(username => codewars.scrape_katas(username))
+    .then(username => codewars.katas(username))
     .tap(data => logger.info('User', data))
     .then(data => res.json({ data }))
     .catch((error) => {
