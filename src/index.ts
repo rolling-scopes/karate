@@ -6,11 +6,7 @@ import logger from './logger';
 
 const parseUserName = req =>
   P.attempt(() => {
-    if (req.method !== 'POST') {
-      throw new Error('Only POST requests are accepted');
-    }
-
-    const { username } = req.body;
+    const { username } = JSON.parse(req.body);
 
     if (!username) {
       throw new Error('username is empty');
@@ -19,38 +15,38 @@ const parseUserName = req =>
     return username;
   });
 
-export const scrape_katas = (req, res) => {
-  if (req.method === 'OPTIONS') {
-    return res
-      .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'POST')
-      .status(200);
-  }
-
-  return parseUserName(req)
-    .then(username => codewars.scrape_katas(username))
-    .tap(data => logger.info('User', data))
-    .then(data => res.json({ data }))
-    .catch((error) => {
-      logger.error(error);
-      res.status(403).json({ error: error.message || error });
-    });
+const headers = {
+  'Access-Control-Allow-Origin': '*',
 };
 
-export const scrape_duolingo = (req, res) => {
-  if (req.method === 'OPTIONS') {
-    return res
-      .set('Access-Control-Allow-Origin', '*')
-      .set('Access-Control-Allow-Methods', 'POST')
-      .status(200);
-  }
-
-  return parseUserName(req)
-    .then(username => duolingo.scrape_profile(username))
+export const scrape_katas = (evt, ctx, cb) =>
+  parseUserName(evt)
+    .then(username => codewars.katas(username))
     .tap(data => logger.info('User', data))
-    .then(data => res.json({ data }))
+    .then(data => cb(null, {
+      headers,
+      body: JSON.stringify({ data }),
+    }))
     .catch((error) => {
       logger.error(error);
-      res.status(403).json({ error: error.message || error });
+      cb(null, {
+        headers,
+        body: JSON.stringify({ error }),
+      });
     });
-};
+
+export const scrape_duolingo = (evt, ctx, cb) =>
+  parseUserName(evt)
+    .then(username => duolingo.profile(username))
+    .tap(data => logger.info('User', data))
+    .then(data => cb(null, {
+      headers,
+      body: JSON.stringify({ data }),
+    }))
+    .catch((error) => {
+      logger.error(error);
+      cb(null, {
+        headers,
+        body: JSON.stringify({ error }),
+      });
+    });

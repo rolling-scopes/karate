@@ -1,14 +1,17 @@
 
 import test from 'ava';
-import { scrape_profile } from '../scrape';
+import * as scrape from '../scrape';
 
 test('Duolingo -> profile', async (t) => {
-  const res = await scrape_profile('siarheimel');
-  t.is(res, { userName: 'siarheimel', languages:[
-    {
-      name: 'English - Level 5',
-      nextLevel: 'Next level: 40 XP',
-      total: 'Total XP: 410 XP',
-    },
-  ]});
+  const res = await scrape.profile('siarheimel');
+  t.deepEqual(res, {
+    userName: 'siarheimel',
+    languages: [
+      {
+        name: 'English - Level 5',
+        nextLevel: 'Next level: 40 XP',
+        total: 'Total XP: 410 XP',
+      },
+    ],
+  });
 });
