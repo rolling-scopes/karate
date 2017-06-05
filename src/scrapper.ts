@@ -3,14 +3,15 @@ import * as P from 'bluebird';
 import * as CDP from 'chrome-remote-interface';
 import * as chrome from '@serverless-chrome/lambda';
 
+const CHROME_FLAGS = [
+  '--window-size=1280x1696',
+  '--hide-scrollbars',
+];
+
 export const scrape = (url, expression, awaitPromise = false) =>
   P.coroutine(function * (url, expression) {
-    yield chrome({
-      flags: [
-        '--window-size=1280x1696',
-        '--hide-scrollbars',
-      ],
-    });
+    yield chrome({ flags: [...CHROME_FLAGS] });
+
     const target = yield CDP.New();
     const client = yield CDP({ target });
 
