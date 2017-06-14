@@ -1,22 +1,36 @@
 import * as AWS from 'aws-sdk';
 import * as pages from '../../pages';
 import { createResponse, parseUserName } from '../../utils';
+import logger from '../../logger';
 
 const lambda = new AWS.Lambda({ apiVersion: '2015-03-31' });
 
 export const scrapeProfile = async (evt, ctx, cb) => {
-  const username = await parseUserName(evt);
+  try {
+    const userName = await parseUserName(evt);
 
-  const url = pages.profileAddr(username);
-  const expression = pages.profileExpression;
+    logger.info(userName);
 
-  const params = {
-    FunctionName: process.env.scraper,
-    InvocationType: 'Event',
-    Payload: JSON.stringify({ url, expression, awaitPromise: false }),
-  };
+    const url = pages.profileAddr(userName);
+    const expression = pages.profileExpression;
 
-  const res = await lambda.invoke(params).promise();
+    const params = {
+      FunctionName: process.env.scraper,
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify({ url, expression, awaitPromise: false }),
+    };
 
-  cb(null, createResponse(200, res));
+    const { Payload } = await lambda.invoke(params).promise();
+
+    const data = JSON.parse(Payload.toString());
+
+    logger.info(data);
+
+    cb(null, createResponse(200, {
+      userName,
+      profile: JSON.parse(data.result.value),
+    }));
+  } catch (e) {
+    cb(null, createResponse(500, { error: e.message }));
+  }
 };

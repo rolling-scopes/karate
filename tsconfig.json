@@ -10,8 +10,7 @@
 		"removeComments": true,
 		"lib": [
 			"es6",
-			"es2016",
-			"dom"
+			"es2016"
 		]
 	},
 	"include": [
