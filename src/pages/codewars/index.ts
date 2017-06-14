@@ -1,20 +1,16 @@
 
-import * as P from 'bluebird';
-import * as scrapper from '../../scrapper';
+const CODEWARS = 'https://www.codewars.com';
 
-const CODEWARS_URL = 'https://www.codewars.com';
 const SELECTORS = {
-  solvedKatas: '.list-item.kata .item-title a',
+  solvedKatasSelector: '.list-item.kata .item-title a',
 };
 
-export interface KatasScore {
-  userName: string;
-  solved: string[];
-  total: number;
+export interface KatasSelector {
+  solvedKatasSelector: string;
 }
 
-function grabCompletedKatas(solvedKataSelector) {
-  return `
+const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
+  `
     const d = new Promise((resolve, reject) => {
       const grabKatas = solvedKataSelector =>
         [...document.querySelectorAll(solvedKataSelector)]
@@ -31,11 +27,11 @@ function grabCompletedKatas(solvedKataSelector) {
 
       scrollTo(getPageHeight());
 
-      if (hasNotKatas('${solvedKataSelector}')) return reject(new Error('has not katas'));
+      if (hasNotKatas('${solvedKatasSelector}')) return reject(new Error('has not katas'));
 
       const waitUntilMultiplyIsReady = () =>
         new Promise((resolve) => {
-          const katas = grabKatas('${solvedKataSelector}');
+          const katas = grabKatas('${solvedKatasSelector}');
 
           if (katas.indexOf('multiply') !== -1) return resolve();
 
@@ -47,21 +43,13 @@ function grabCompletedKatas(solvedKataSelector) {
 
         waitUntilMultiplyIsReady()
           .then(() => {
-            const solved = grabKatas('${solvedKataSelector}');
+            const solved = grabKatas('${solvedKatasSelector}');
             resolve(solved);
           });
     });
     d.then(res => JSON.stringify(res));
   `;
-}
 
-export const katas = (userName: string) : Promise<KatasScore> =>
-    P.coroutine(function * () {
-      const url = `${CODEWARS_URL}/users/${userName}/completed`;
-      const exp = grabCompletedKatas(SELECTORS.solvedKatas);
+export const katasExpression = createKatasExpression(SELECTORS);
 
-      const result = yield scrapper.scrape(url, exp, true);
-      const solved = JSON.parse(result.result.value);
-
-      return { userName, solved, total: solved.length };
-    })();
+export const katasAddr = (userName: string) => `${CODEWARS}/users/${userName}/completed`;

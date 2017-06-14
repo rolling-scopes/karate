@@ -5,31 +5,47 @@ frameworkVersion: ">=1.14.0 <2.0.0"
 provider:
   name: aws
   runtime: nodejs6.10
-  memorySize: 1024
-  timeout: 300
-  apiKeys: ${file(./project.yml):apiKeys}
+  region: us-east-1
+  stage: test
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: arn:aws:lambda:*:*:function:${self:custom.scraper}
+  environment:
+    stage: ${self:custom.stage}
+    scraper: ${self:custom.scraper}
 
 plugins:
   - serverless-webpack
 
 custom:
   webpackIncludeModules: true
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:custom.stage}-${self:service}
+  scraper: ${self:custom.prefix}-scraper
 
 functions:
   codewarsKatas:
-    handler: handler.scrape_katas
+    handler: handler.scrapeKatas
+    timeout: 30
     events:
       - http:
           method: post
           path: katas
           cors: true
-          private: true
 
   duolingoProfile:
-    handler: handler.scrape_duolingo
+    handler: handler.scrapeProfile
+    timeout: 30
     events:
       - http:
           method: post
           path: duolingo
           cors: true
-          private: true
+
+  scraper:
+    handler: handler.scraper
+    name: ${self:custom.scraper}
+    timeout: 300
+    memorySize: 512
