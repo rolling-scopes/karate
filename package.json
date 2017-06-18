@@ -4,7 +4,6 @@
   "description": "webscraper",
   "main": "dist/index.js",
   "scripts": {
-    "predeploy": "npm run test",
     "deploy": "sls deploy",
     "lint": "tslint --fix --project tsconfig.json",
     "lint:staged": "lint-staged"
@@ -12,14 +11,12 @@
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "@serverless-chrome/lambda": "^0.0.0-pre-release-5",
+    "@serverless-chrome/lambda": "^0.0.0-pre-release-5.2",
     "bluebird": "^3.5.0",
     "chrome-remote-interface": "^0.23.1",
-    "s3-db": "^2.0.13",
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "@types/aws-sdk": "^2.7.0",
     "@types/bluebird": "^3.5.5",
     "@types/node": "^7.0.27",
     "@types/winston": "^2.3.3",
