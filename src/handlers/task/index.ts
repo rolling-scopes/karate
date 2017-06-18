@@ -11,7 +11,7 @@ export const scrapeTask = async (evt, ctx, cb) => {
   try {
     const [ userName, pageId ] = await P.all([parsePayload(evt), parsePageId(evt)])
 
-    logger.info({ userName, pageId })
+    logger.info(userName, pageId)
 
     const { url, expression } = await pages(pageId, userName)
 

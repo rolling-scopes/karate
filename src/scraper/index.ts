@@ -27,7 +27,7 @@ export const scrape = async ({ url, expression, awaitPromise = false }: ScrapeQu
 
   await Page.navigate({ url })
 
-  await new P(resolve => loadEventFired.then(() => setTimeout(resolve, 1000)))
+  await new P(resolve => loadEventFired.then(() => setTimeout(resolve, 2000)))
 
   const result = await Runtime.evaluate({ expression, awaitPromise })
 

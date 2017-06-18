@@ -38,30 +38,34 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   prefix: ${self:custom.stage}-${self:service}
   scraper: ${self:custom.prefix}-scraper
+  task: ${self:custom.prefix}-task
   sqs: ${self:custom.prefix}-messages
   worker: ${self:custom.prefix}-worker
   sender: ${self:custom.prefix}-sender
 
 functions:
-  scrapeTask:
+  task:
     handler: handler.scrapeTask
-    timeout: 30
+    name: ${self:custom.task}
+    timeout: 10
+    memorySize: 128
     events:
       - http:
           method: post
           path: scrape/{page_id}
           cors: true
 
-  scrapeWorker:
+  worker:
     handler: handler.scrapeWorker
     name: ${self:custom.worker}
     timeout: 300
     memorySize: 512
 
-  scrapeSender:
+  sender:
     handler: handler.scrapeSender
     name: ${self:custom.sender}
-    timeout: 30
+    timeout: 10
+    memorySize: 128
 
 resources:
   Resources:
@@ -69,16 +73,16 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.sqs}
-        MessageRetentionPeriod: 600
-        VisibilityTimeout: 60
+        MessageRetentionPeriod: 300
+        VisibilityTimeout: 300
         RedrivePolicy:
           deadLetterTargetArn:
             Fn::GetAtt:
             - MessagesDeadLetterQueue
             - Arn
-          maxReceiveCount: 10
+          maxReceiveCount: 3
     MessagesDeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.sqs}-dlq
-        MessageRetentionPeriod: 600
+        MessageRetentionPeriod: 300
