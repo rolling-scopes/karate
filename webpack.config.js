@@ -13,11 +13,9 @@ module.exports = {
     filename: 'handler.js'
   },
   target: 'node',
-  externals: [nodeExternals({
-    whitelist: ['bluebird']
-  })],
+  externals: [nodeExternals()],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.ts'],
     modules: ['node_modules']
   },
   module: {
@@ -36,6 +34,6 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.IgnorePlugin(/\.(css|html|json|md|txt)$/),
-    // new BabiliPlugin(),
+    new BabiliPlugin(),
   ]
 };

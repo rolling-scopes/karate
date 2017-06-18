@@ -5,31 +5,80 @@ frameworkVersion: ">=1.14.0 <2.0.0"
 provider:
   name: aws
   runtime: nodejs6.10
-  memorySize: 1024
-  timeout: 300
-  apiKeys: ${file(./project.yml):apiKeys}
+  region: us-east-1
+  stage: test
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:DeleteMessage
+        - sqs:ReceiveMessage
+      Resource: arn:aws:sqs:*:*:${self:custom.sqs}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: arn:aws:lambda:*:*:function:${self:custom.worker}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: arn:aws:lambda:*:*:function:${self:custom.sender}
+  environment:
+    region: ${self:provider.region}
+    stage: ${self:custom.stage}
+    scraper: ${self:custom.scraper}
+    sqs: ${self:custom.sqs}
+    worker: ${self:custom.worker}
+    sender: ${self:custom.sender}
 
 plugins:
   - serverless-webpack
 
 custom:
   webpackIncludeModules: true
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:custom.stage}-${self:service}
+  scraper: ${self:custom.prefix}-scraper
+  sqs: ${self:custom.prefix}-messages
+  worker: ${self:custom.prefix}-worker
+  sender: ${self:custom.prefix}-sender
 
 functions:
-  codewarsKatas:
-    handler: handler.scrape_katas
+  scrapeTask:
+    handler: handler.scrapeTask
+    timeout: 30
     events:
       - http:
           method: post
-          path: katas
+          path: scrape/{page_id}
           cors: true
-          private: true
 
-  duolingoProfile:
-    handler: handler.scrape_duolingo
-    events:
-      - http:
-          method: post
-          path: duolingo
-          cors: true
-          private: true
+  scrapeWorker:
+    handler: handler.scrapeWorker
+    name: ${self:custom.worker}
+    timeout: 300
+    memorySize: 512
+
+  scrapeSender:
+    handler: handler.scrapeSender
+    name: ${self:custom.sender}
+    timeout: 30
+
+resources:
+  Resources:
+    Messages:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.sqs}
+        MessageRetentionPeriod: 600
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - MessagesDeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+    MessagesDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.sqs}-dlq
+        MessageRetentionPeriod: 600
