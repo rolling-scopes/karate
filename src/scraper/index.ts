@@ -1,39 +1,39 @@
-import * as P from 'bluebird';
-import * as CDP from 'chrome-remote-interface';
-import * as chrome from '@serverless-chrome/lambda';
+import * as P from 'bluebird'
+import * as CDP from 'chrome-remote-interface'
+import * as chrome from '@serverless-chrome/lambda'
 
 const CHROME_FLAGS = [
   '--window-size=1280x1696',
-  '--hide-scrollbars',
-];
-
+  '--hide-scrollbars'
+]
 export interface ScrapeQuery {
-  url: string;
-  expression: string;
-  awaitPromise?: boolean;
+  url: string
+  expression: string
+  awaitPromise?: boolean
 }
 
 export const scrape = async ({ url, expression, awaitPromise = false }: ScrapeQuery) => {
-  await chrome({ flags: [...CHROME_FLAGS] });
+  await chrome({ flags: [...CHROME_FLAGS] })
 
-  const target = await CDP.New();
-  const client = await CDP({ target });
+  const target = await CDP.New()
 
-  const { Page, Runtime } = client;
+  const client = await CDP({ target })
 
-  const loadEventFired = Page.loadEventFired();
+  const { Page, Runtime } = client
 
-  await P.all([Page.enable(), Runtime.enable()]);
+  const loadEventFired = Page.loadEventFired()
 
-  await Page.navigate({ url });
+  await P.all([Page.enable(), Runtime.enable()])
 
-  await new P(resolve => loadEventFired.then(() => setTimeout(resolve, 1000)));
+  await Page.navigate({ url })
 
-  const result = await Runtime.evaluate({ expression, awaitPromise });
+  await new P(resolve => loadEventFired.then(() => setTimeout(resolve, 1000)))
 
-  const id = client.target.id;
+  const result = await Runtime.evaluate({ expression, awaitPromise })
 
-  await CDP.Close({ id });
+  const id = client.target.id
 
-  return result;
-};
+  await CDP.Close({ id })
+
+  return result
+}

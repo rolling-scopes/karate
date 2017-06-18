@@ -1,14 +1,14 @@
 
-import * as winston from 'winston';
+import * as winston from 'winston'
 
 const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
       handleExceptions: false,
       json: false,
-      timestamp() { return new Date().toISOString(); },
-    }),
-  ],
-});
+      timestamp ( ) { return new Date().toISOString() }
+    })
+  ]
+})
 
-export default logger;
+export default logger

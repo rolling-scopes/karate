@@ -8,6 +8,7 @@
 		"preserveConstEnums": true,
 		"noUnusedLocals": true,
 		"removeComments": true,
+    "strictNullChecks": true,
 		"lib": [
 			"es6",
 			"es2016"

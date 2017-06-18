@@ -1,13 +1,11 @@
 
-const CODEWARS = 'https://www.codewars.com';
+const CODEWARS = 'https://www.codewars.com'
 
 const SELECTORS = {
-  solvedKatasSelector: '.list-item.kata .item-title a',
-};
-
-export interface KatasSelector {
-  solvedKatasSelector: string;
+  solvedKatasSelector: '.list-item.kata .item-title a'
 }
+export interface KatasSelector {
+  solvedKatasSelector: string}
 
 const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
   `
@@ -48,8 +46,6 @@ const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
           });
     });
     d.then(res => JSON.stringify(res));
-  `;
-
-export const katasExpression = createKatasExpression(SELECTORS);
-
-export const katasAddr = (userName: string) => `${CODEWARS}/users/${userName}/completed`;
+  `
+export const katasExpression = createKatasExpression(SELECTORS)
+export const katasAddr = (userName: string) => `${CODEWARS}/users/${userName}/completed`
