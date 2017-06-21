@@ -5,7 +5,8 @@ const SELECTORS = {
   solvedKatasSelector: '.list-item.kata .item-title a'
 }
 export interface KatasSelector {
-  solvedKatasSelector: string}
+  solvedKatasSelector: string
+}
 
 const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
   `
@@ -31,15 +32,17 @@ const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
         new Promise((resolve) => {
           const katas = grabKatas('${solvedKatasSelector}');
 
+          console.log(katas);
+
           if (katas.indexOf('multiply') !== -1) return resolve();
 
-          scrollTo(getPageHeight() + 200);
+          scrollTo(getPageHeight());
 
-          delay(100)
+          delay(300)
             .then(() => waitUntilMultiplyIsReady().then(resolve));
         });
 
-        waitUntilMultiplyIsReady()
+        return waitUntilMultiplyIsReady()
           .then(() => {
             const solved = grabKatas('${solvedKatasSelector}');
             resolve(solved);

@@ -4,7 +4,6 @@
 		"target": "es6",
 		"module": "commonjs",
 		"moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
 		"preserveConstEnums": true,
 		"noUnusedLocals": true,
 		"removeComments": true,
