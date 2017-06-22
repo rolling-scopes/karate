@@ -1,9 +1,13 @@
 # KARATE - Serverless Webscraper
 
+## Webscraper are based by headless chrome and serverless framework
+
 ## Setup
+Install serverless `npm i -g serverless`
+Create AWS Credentials
+Install packages `yarn`
 Run `sls deploy`
-## Support
-[![Beerpay](https://beerpay.io/SiarheiMelnik/karate/badge.svg?style=beer-square)](https://beerpay.io/SiarheiMelnik/karate)  [![Beerpay](https://beerpay.io/SiarheiMelnik/karate/make-wish.svg?style=flat-square)](https://beerpay.io/SiarheiMelnik/karate?focus=wish)
+
 
 ## Licence
 
