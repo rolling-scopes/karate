@@ -3,10 +3,10 @@
 ## Webscraper are based by headless chrome and serverless framework
 
 ## Setup
-Install serverless `npm i -g serverless`
-Create AWS Credentials
-Install packages `yarn`
-Run `sls deploy`
+ - Install serverless `npm i -g serverless`
+ - Create AWS Credentials
+ - Install packages `yarn`
+ - Run `sls deploy`
 
 
 ## Licence
