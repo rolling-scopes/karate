@@ -13,10 +13,13 @@ export const scrapeWorker = async (evt, ctx) => {
     const data = await P.fromCallback(cb => sqs.receiveMessage({
       QueueUrl: url,
       MaxNumberOfMessages: 1,
+      WaitTimeSeconds: 10,
       MessageAttributeNames: ['All']
     }, cb))
 
-    await P.mapSeries(data.Messages, async ({ Body, ReceiptHandle}) => {
+    if (!data.Messages) return ctx.succeed()
+
+    await P.map(data.Messages, async ({ Body, ReceiptHandle}) => {
       const query = JSON.parse(Body)
 
       const res = await scrape(query)

@@ -4,9 +4,7 @@ import * as chrome from '@serverless-chrome/lambda'
 
 const CHROME_OPTIONS = {
   flags: [
-    '--window-size=1280x1696',
-    '--disable-gpu',
-    '--incognito'
+    '--window-size=1024x768'
   ]
 }
 export interface ScrapeQuery {
@@ -15,12 +13,8 @@ export interface ScrapeQuery {
   awaitPromise?: boolean
 }
 
-const LOAD_TIMEOUT = 300000
-
 export const scrape = async ({ url, expression, awaitPromise = false }: ScrapeQuery) => {
   await chrome(CHROME_OPTIONS)
-
-  let result
 
   const target = await CDP.New()
 
@@ -28,27 +22,20 @@ export const scrape = async ({ url, expression, awaitPromise = false }: ScrapeQu
 
   const { Page, Runtime } = client
 
-  try {
-    await P.all([Page.enable(), Runtime.enable()])
+  await P.all([
+    Page.enable(),
+    Runtime.enable()
+  ])
 
-    const loadEventFired = Page.loadEventFired()
+  await Page.navigate({ url })
 
-    await Page.navigate({ url })
+  await Page.loadEventFired()
 
-    await new P((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error(`Page load timed out after ${LOAD_TIMEOUT} ms.`)), LOAD_TIMEOUT)
-      loadEventFired.then(() => {
-        clearTimeout(timeout)
-        resolve()
-      })
-    })
+  await P.delay(1000)
 
-    result = await Runtime.evaluate({ expression, awaitPromise })
-  } catch (e) {
-    console.log(e)
-  }
+  const result = await Runtime.evaluate({ expression, awaitPromise })
 
-  const id = client.target.id
+  const { id } = client.target
 
   await CDP.Close({ id })
 
