@@ -16,6 +16,7 @@
     "@serverless-chrome/lambda": "^1.0.0-4",
     "bluebird": "^3.5.0",
     "chrome-remote-interface": "^0.23.1",
+    "request-promise": "^4.2.1",
     "winston": "^2.3.1"
   },
   "devDependencies": {
