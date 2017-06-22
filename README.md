@@ -1,6 +1,6 @@
 # KARATE - Serverless Webscraper
 
-## Webscraper are based by headless chrome and serverless framework
+## Webscraper is based on headless chrome and serverless framework
 
 ## Setup
  - Install serverless `npm i -g serverless`
