@@ -1,3 +1,4 @@
+import 'request'
 import * as rq from 'request-promise'
 
 export const scrapeSender = async ({ query, data }, ctx) => {
