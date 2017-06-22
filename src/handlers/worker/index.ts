@@ -17,8 +17,6 @@ export const scrapeWorker = async (evt, ctx) => {
       MessageAttributeNames: ['All']
     }, cb))
 
-    if (!data.Messages) return ctx.succeed()
-
     await P.map(data.Messages, async ({ Body, ReceiptHandle}) => {
       const query = JSON.parse(Body)
 
@@ -42,7 +40,7 @@ export const scrapeWorker = async (evt, ctx) => {
 
     return ctx.succeed()
   } catch (e) {
-    console.log(e.message)
+    logger.error(e.message)
     return ctx.fail({ error: e.message })
   }
 }
