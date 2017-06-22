@@ -5,7 +5,6 @@ import logger from '../../logger'
 import { createResponse, parsePayload, parsePageId, sqsUrl } from '../../utils'
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' })
-const lambda = new AWS.Lambda({ apiVersion: '2015-03-31' })
 
 export const scrapeTask = async (evt, ctx, cb) => {
   try {
@@ -18,11 +17,6 @@ export const scrapeTask = async (evt, ctx, cb) => {
     await P.fromCallback(cb => sqs.sendMessage({
       QueueUrl: sqsUrl(process.env.region, +ctx.invokedFunctionArn.split(':')[4], process.env.sqs),
       MessageBody: JSON.stringify({ url, pageId, userName, expression, awaitPromise: true })
-    }, cb))
-
-    await P.fromCallback(cb => lambda.invoke({
-      FunctionName: process.env.worker,
-      InvocationType: 'Event'
     }, cb))
 
     cb(null, createResponse(200, { pageId, inQueue: true }))

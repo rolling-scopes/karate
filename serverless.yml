@@ -60,6 +60,8 @@ functions:
     name: ${self:custom.worker}
     timeout: 300
     memorySize: 512
+    events:
+      - schedule: rate(5 minutes)
 
   sender:
     handler: handler.scrapeSender
@@ -73,16 +75,5 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.sqs}
-        MessageRetentionPeriod: 300
-        VisibilityTimeout: 300
-        RedrivePolicy:
-          deadLetterTargetArn:
-            Fn::GetAtt:
-            - MessagesDeadLetterQueue
-            - Arn
-          maxReceiveCount: 3
-    MessagesDeadLetterQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: ${self:custom.sqs}-dlq
-        MessageRetentionPeriod: 300
+        ReceiveMessageWaitTimeSeconds: 10
+        VisibilityTimeout: 15
