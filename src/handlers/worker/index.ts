@@ -12,12 +12,14 @@ export const scrapeWorker = async (evt, ctx) => {
     const url = sqsUrl(process.env.region, +ctx.invokedFunctionArn.split(':')[4], process.env.sqs)
     const data = await P.fromCallback(cb => sqs.receiveMessage({
       QueueUrl: url,
-      MaxNumberOfMessages: 1,
+      MaxNumberOfMessages: 5,
       WaitTimeSeconds: 10,
       MessageAttributeNames: ['All']
     }, cb))
 
-    await P.map(data.Messages, async ({ Body, ReceiptHandle}) => {
+    const messages = data.Messages || []
+
+    await P.map(messages, async ({ Body, ReceiptHandle}) => {
       const query = JSON.parse(Body)
 
       const res = await scrape(query)

@@ -4,7 +4,7 @@ import { katasExpression, katasAddr } from '../../pages/codewars'
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000
 
 test('Scrape katas', async () => {
-  const url = katasAddr('telukigor')
+  const url = katasAddr('SiarheiMelnik')
   const data = await scraper.scrape({ url, expression: katasExpression, awaitPromise: true })
   const obj = data.result.value
   console.log(obj)

@@ -8,6 +8,7 @@
 		"noUnusedLocals": true,
 		"removeComments": true,
     "strictNullChecks": true,
+    "pretty": true,
 		"lib": [
 			"es6",
 			"es2016"
@@ -18,5 +19,9 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "resolveGlobs": true,
+    "useWebpackText": true
+  }
 }
