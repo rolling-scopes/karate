@@ -8,7 +8,7 @@ export const scrapeSender = async ({ query, data }, ctx) => {
 
   const params = {
     method: 'POST',
-    uri: 'http://api.posttestserver.com/post',
+    uri: url,
     body: {
       query,
       data
