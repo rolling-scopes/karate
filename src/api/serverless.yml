@@ -5,7 +5,7 @@ frameworkVersion: ">=1.14.0 <2.0.0"
 provider:
   name: aws
   runtime: nodejs6.10
-  region: us-east-1
+  region: eu-west-1
   stage: test
   iamRoleStatements:
     - Effect: Allow
@@ -28,6 +28,7 @@ custom:
   prefix: ${self:custom.stage}-${self:service}
   result: ${self:custom.prefix}-result
   task: ${self:custom.prefix}-task
+  expression: ${self:custom.prefix}-expression
   task_table: ${self:custom.prefix}-task
   result_table: ${self:custom.prefix}-result
 
@@ -41,13 +42,22 @@ functions:
           path: tasks/add
           cors: true
 
+  findExpression:
+    handler: handler.findExpression
+    name: ${self:custom.expression}
+    events:
+      - http:
+          method: post
+          path: expression
+          cors: true
+
   getResult:
     handler: handler.getResult
     name: ${self:custom.result}
     events:
       - http:
           method: get
-          path: results/{result_id}
+          path: results/{task_id}
           cors: true
 
 resources:
@@ -58,11 +68,11 @@ resources:
         TableName: ${self:provider.environment.result_table}
         KeySchema:
           -
-            AttributeName: page_id
+            AttributeName: id
             KeyType: HASH
         AttributeDefinitions:
           -
-            AttributeName: page_id
+            AttributeName: id
             AttributeType: S
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -73,12 +83,14 @@ resources:
         TableName: ${self:provider.environment.task_table}
         KeySchema:
           -
-            AttributeName: page_id
+            AttributeName: id
             KeyType: HASH
         AttributeDefinitions:
           -
-            AttributeName: page_id
+            AttributeName: id
             AttributeType: S
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
