@@ -4,16 +4,21 @@ const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const BabiliPlugin = require('babili-webpack-plugin');
+const slsw = require('serverless-webpack');
+
+const NODE_MODULES_DIR = path.join(__dirname, 'node_modules');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: slsw.lib.entries,
   output: {
     libraryTarget: 'commonjs',
     path: path.join(__dirname, '.webpack'),
-    filename: 'handler.js'
+    filename: '[name].js'
   },
   target: 'node',
-  externals: [nodeExternals()],
+  externals: [nodeExternals({
+    modulesDir: NODE_MODULES_DIR
+  })],
   resolve: {
     extensions: ['.ts'],
     modules: ['node_modules']
@@ -24,7 +29,8 @@ module.exports = {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader',
         options: {
-            configFileName: 'tsconfig.webpack.json'
+          configFileName: path.join(__dirname , 'tsconfig.webpack.json'),
+          transpileOnly: true
         }
       }
     ]
@@ -33,7 +39,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.IgnorePlugin(/\.(css|html|json|md|txt)$/),
     new BabiliPlugin(),
   ]
 };

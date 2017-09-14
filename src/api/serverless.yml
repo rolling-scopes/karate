@@ -1,0 +1,84 @@
+service: karate-service-api
+
+frameworkVersion: ">=1.14.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-east-1
+  stage: test
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - dynamodb:*
+      Resource: arn:aws:dynamodb:*:*:table/*
+  environment:
+    region: ${self:provider.region}
+    task_table: ${self:custom.task_table}
+    result_table: ${self:custom.result_table}
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack: '../../webpack.config.js'
+  webpackIncludeModules:
+    packagePath: '../../package.json'
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:custom.stage}-${self:service}
+  result: ${self:custom.prefix}-result
+  task: ${self:custom.prefix}-task
+  task_table: ${self:custom.prefix}-task
+  result_table: ${self:custom.prefix}-result
+
+functions:
+  addTask:
+    handler: handler.addTask
+    name: ${self:custom.task}
+    events:
+      - http:
+          method: post
+          path: tasks/add
+          cors: true
+
+  getResult:
+    handler: handler.getResult
+    name: ${self:custom.result}
+    events:
+      - http:
+          method: get
+          path: results/{result_id}
+          cors: true
+
+resources:
+  Resources:
+    ResultTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.result_table}
+        KeySchema:
+          -
+            AttributeName: page_id
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: page_id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.task_table}
+        KeySchema:
+          -
+            AttributeName: page_id
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: page_id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
