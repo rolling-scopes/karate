@@ -24,16 +24,14 @@ custom:
     packagePath: '../../package.json'
   stage: ${opt:stage, self:provider.stage}
   prefix: ${self:custom.stage}-${self:service}
-  result: ${self:custom.prefix}-result
-  task: ${self:custom.prefix}-task
-  expression: ${self:custom.prefix}-expression
+  result_arn: ${file(../../config.yml):result_arn}
   task_table: ${self:custom.prefix}-task
   result_table: ${self:custom.prefix}-result
 
 functions:
   addTask:
     handler: handler.addTask
-    name: ${self:custom.task}
+    name: ${self:custom.prefix}-addTask
     events:
       - http:
           method: post
@@ -42,7 +40,7 @@ functions:
 
   findExpression:
     handler: handler.findExpression
-    name: ${self:custom.expression}
+    name: ${self:custom.prefix}-findExpression
     events:
       - http:
           method: post
@@ -51,12 +49,18 @@ functions:
 
   getResult:
     handler: handler.getResult
-    name: ${self:custom.result}
+    name: ${self:custom.prefix}-getResult
     events:
       - http:
           method: get
           path: results/{task_id}
           cors: true
+
+  updateResult:
+    handler: handler.updateResult
+    name: ${self:custom.prefix}-updateResult
+    events:
+      - sns: ${self:custom.result_arn}
 
 resources:
   Resources:

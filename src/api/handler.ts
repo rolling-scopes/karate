@@ -10,7 +10,23 @@ export const getResult = async (evt, ctx, cb) => {
 
     cb(null, createResponse(200, data))
   } catch (e) {
-    cb(null, createResponse(200, { err: e.message }))
+    cb(null, createResponse(500, { err: e.message }))
+  }
+}
+
+export const updateResult = async (evt, ctx, cb) => {
+  try {
+    const msg = evt.Records[0].Sns.Message
+    const data = JSON.parse(msg)
+
+    console.log(data)
+
+    const status = await result.update(data)
+    console.log(status)
+    cb(null)
+  } catch (e) {
+    console.log(e)
+    cb(e)
   }
 }
 
@@ -20,11 +36,11 @@ export const addTask = async (evt, ctx, cb) => {
 
     if (!url || !expression) throw new Error('Missed url or expression')
 
-    const data = await task.add(url, expression)
+    const { Item } = await task.add(url, expression)
 
-    cb(null, createResponse(200, data))
+    cb(null, createResponse(200, Item))
   } catch (e) {
-    cb(null, createResponse(200, { err: e.message }))
+    cb(null, createResponse(500, { err: e.message }))
   }
 }
 
@@ -38,6 +54,6 @@ export const findExpression = async (evt, ctx, cb) => {
 
     cb(null, createResponse(200, expression))
   } catch (e) {
-    cb(null, createResponse(200, { err: e.message }))
+    cb(null, createResponse(500, { err: e.message }))
   }
 }

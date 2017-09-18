@@ -5,19 +5,26 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - sns:*
+      Resource: arn:aws:sns:*:*:*
   environment:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
+    result_arn: ${self:custom.result_arn}
 
 plugins:
   - serverless-webpack
 
 custom:
-  stream: ${file(../../config.yml):db_arn}
-  stage: ${opt:stage, self:provider.stage}
   webpack: '../../webpack.config.js'
   webpackIncludeModules:
     packagePath: '../../package.json'
+  stage: ${opt:stage, self:provider.stage}
+  result_stream: ${file(../../config.yml):result_stream}
+  result_arn: ${file(../../config.yml):result_arn}
 
 functions:
   scrape:
@@ -29,5 +36,5 @@ functions:
           method: post
           path: scrape
           cors: true
-      - stream: ${self:custom.stream}
+      - stream: ${self:custom.result_stream}
 
