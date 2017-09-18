@@ -4,13 +4,11 @@ const client = new DynamoDB.DocumentClient({
   region: process.env.region
 })
 
-export const get = (taskId) => {
+export const get = async (taskId) => {
   const params = {
     TableName: String(process.env.result_table),
-    Key: {
-      'id': taskId
-    }
+    Key: { 'id': taskId }
   }
 
-  return client.get(params).promise()
+  return await client.get(params).promise()
 }

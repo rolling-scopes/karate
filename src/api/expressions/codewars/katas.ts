@@ -26,7 +26,7 @@ const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
       new Promise(async (resolve) => {
         let previousHeight;
         let currentHeight = 0;
-        const katas = grabKatas('.list-item.kata .item-title a')
+        const katas = grabKatas('${solvedKatasSelector}')
         while (previousHeight !== currentHeight) {
           previousHeight = currentHeight;
           currentHeight = getPageHeight();
@@ -38,7 +38,7 @@ const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
 
       waitUntilMultiplyIsReady()
         .then(() => {
-          const katas = grabKatas('.list-item.kata .item-title a');
+          const katas = grabKatas('${solvedKatasSelector}');
           resolve(katas);
         });
   });

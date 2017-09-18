@@ -5,7 +5,7 @@ const client = new DynamoDB.DocumentClient({
   region: process.env.region
 })
 
-export const add = (url, expression) => {
+export const add = async (url, expression) => {
   const params = {
     TableName: String(process.env.task_table),
     Item: {
@@ -15,5 +15,5 @@ export const add = (url, expression) => {
     }
   }
 
-  return client.put(params).promise()
+  return await client.put(params).promise()
 }
