@@ -1,8 +1,7 @@
-
 const CODEWARS = 'https://www.codewars.com'
 
 const SELECTORS = {
-  solvedKatasSelector: '.list-item.kata .item-title a'
+  solvedKatasSelector: '.list-item.kata .item-title a',
 }
 export interface KatasSelector {
   solvedKatasSelector: string

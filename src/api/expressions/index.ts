@@ -6,17 +6,17 @@ export default (pageName, meta) => {
     case 'katas':
       return {
         url: katas.url(meta),
-        expression: katas.expression()
+        expression: katas.expression(),
       }
     case 'duolingo':
       return {
         url: profile.url(meta),
-        expression: profile.expression()
+        expression: profile.expression(),
       }
     default:
       return {
         url: 'empty',
-        expression: 'empty'
+        expression: 'empty',
       }
   }
 }
