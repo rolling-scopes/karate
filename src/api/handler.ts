@@ -5,10 +5,10 @@ import { createResponse } from '../shared/utils'
 
 export const getResult = async (evt, ctx, cb) => {
   try {
-    const taskId = evt.queryStringParameters.task_id
-    const data = await result.get(taskId)
+    const id = evt.pathParameters.id
+    const { Item } = await result.get(id)
 
-    cb(null, createResponse(200, data))
+    cb(null, createResponse(200, Item))
   } catch (e) {
     cb(null, createResponse(500, { err: e.message }))
   }
@@ -18,8 +18,6 @@ export const updateResult = async (evt, ctx, cb) => {
   try {
     const msg = evt.Records[0].Sns.Message
     const data = JSON.parse(msg)
-
-    console.log(data)
 
     const status = await result.update(data)
     console.log(status)
@@ -38,7 +36,7 @@ export const addTask = async (evt, ctx, cb) => {
 
     const { Item } = await task.add(url, expression)
 
-    cb(null, createResponse(200, Item))
+    cb(null, createResponse(200, { id: Item.id }))
   } catch (e) {
     cb(null, createResponse(500, { err: e.message }))
   }

@@ -53,7 +53,7 @@ functions:
     events:
       - http:
           method: get
-          path: results/{task_id}
+          path: results/{id}
           cors: true
 
   updateResult:

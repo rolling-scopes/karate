@@ -18,13 +18,9 @@ const getQueryFromStream = (record) => {
   }
 }
 
-let chrome
-
 export const scrape = async (evt, ctx, cb) => {
   try {
     await chrome(CHROME_OPTIONS)
-
-    console.log(ctx)
 
     const query = evt.Records ? getQueryFromStream(evt.Records[0]) : JSON.parse(evt.body)
     const { result } = await scraper.scrape(query)
@@ -32,11 +28,9 @@ export const scrape = async (evt, ctx, cb) => {
 
     if (!value) throw new Error('Empty result')
 
-    const data = JSON.parse(value)
-    const res = { query, data }
+    const parsed = JSON.parse(value)
+    const res = { query, parsed }
     const params = { TopicArn: process.env.result_arn, Message: JSON.stringify(res) }
-
-    console.log(params)
 
     await sns.publish(params).promise()
 

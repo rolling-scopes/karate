@@ -14,20 +14,16 @@ export const get = async (taskId) => {
   return await client.get(params).promise()
 }
 
-export const update = async ({ query, data }) => {
+export const update = async ({ query, parsed }) => {
   const id = crypto.createHash('sha256').update(`${query.url}${query.expression}`, 'utf8').digest('hex')
 
   const params = {
     TableName: String(process.env.result_table),
     Key: { 'id': id },
-    UpdateExpression: 'set result = :r',
-    ExpressionAttributeValues: {
-      ':r': data
-    },
+    UpdateExpression: 'set parsed = :p',
+    ExpressionAttributeValues: { ':p': parsed },
     ReturnValues: 'UPDATED_NEW'
   }
-
-  console.log(params)
 
   return await client.update(params).promise()
 }
