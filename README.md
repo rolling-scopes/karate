@@ -8,10 +8,6 @@
  - Install packages `yarn`
  - Run `sls deploy`
 
-## Example
-  - POST https://some_aws_address/test/scrape/{page_id}
-  - BODY { "query": "value", callback: "https://some_data_url.com" }
-
 ## Licence
 
 Copyright 2017 Siarhei Melnik
