@@ -1,10 +1,9 @@
-
 const DUOLINGO = 'https://www.duolingo.com'
 
 const SELECTORS = {
   profileLanguageSelector: '.profile-language',
   languageNameSelector: '.language-name',
-  statSelector: '.substat'
+  statSelector: '.substat',
 }
 
 interface Language {
@@ -27,8 +26,8 @@ export interface ProfileSelector {
 const createProfileExpression = ({
   profileLanguageSelector,
   languageNameSelector,
-  statSelector }: ProfileSelector
-) =>
+  statSelector,
+}: ProfileSelector) =>
   `const d = new Promise((resolve) => {
     setTimeout(() => {
       resolve([...document.querySelectorAll('${profileLanguageSelector}')]

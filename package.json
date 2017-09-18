@@ -8,6 +8,7 @@
     "lint": "tslint --fix --project tsconfig.json",
     "lint:staged": "lint-staged",
     "test": "jest",
+    "prettier": "prettier --no-semi --single-quote --trailing-comma all --write \"src/**/*.ts\"",
     "test:watch": "jest --watch",
     "upgrade-dependencies": "ncu -a",
     "deploy:api": "cd src/api && sls deploy",
@@ -37,6 +38,7 @@
     "lint-staged": "^4.2.1",
     "npm-check-updates": "^2.12.1",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.7.0",
     "serverless-webpack": "3.0.0",
     "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
@@ -46,7 +48,11 @@
     "webpack-node-externals": "^1.6.0"
   },
   "lint-staged": {
-    "lint": "*.ts"
+    "*.{ts}": [
+      "prettier --no-semi --single-quote --trailing-comma all --write",
+      "lint",
+      "git add"
+    ]
   },
   "pre-commit": "lint:staged",
   "jest": {
