@@ -1,4 +1,18 @@
-service: karate-service-api
+service:
+  name: karate-results
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack: '../../webpack.config.js'
+  webpackIncludeModules:
+    packagePath: '../../package.json'
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:custom.stage}-${self:service}
+  result_arn: ${file(../../config.yml):result_arn}
+  task_table: ${self:custom.prefix}-task
+  result_table: ${self:custom.prefix}-result
 
 provider:
   name: aws
@@ -14,19 +28,6 @@ provider:
     region: ${self:provider.region}
     task_table: ${self:custom.task_table}
     result_table: ${self:custom.result_table}
-
-plugins:
-  - serverless-webpack
-
-custom:
-  webpack: '../../webpack.config.js'
-  webpackIncludeModules:
-    packagePath: '../../package.json'
-  stage: ${opt:stage, self:provider.stage}
-  prefix: ${self:custom.stage}-${self:service}
-  result_arn: ${file(../../config.yml):result_arn}
-  task_table: ${self:custom.prefix}-task
-  result_table: ${self:custom.prefix}-result
 
 functions:
   addTask:

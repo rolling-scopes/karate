@@ -1,4 +1,16 @@
-service: karate-scraper
+service:
+  name: karate-scraper
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack: '../../webpack.config.js'
+  webpackIncludeModules:
+    packagePath: '../../package.json'
+  stage: ${opt:stage, self:provider.stage}
+  result_stream: ${file(../../config.yml):result_stream}
+  result_arn: ${file(../../config.yml):result_arn}
 
 provider:
   name: aws
@@ -14,17 +26,6 @@ provider:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     result_arn: ${self:custom.result_arn}
-
-plugins:
-  - serverless-webpack
-
-custom:
-  webpack: '../../webpack.config.js'
-  webpackIncludeModules:
-    packagePath: '../../package.json'
-  stage: ${opt:stage, self:provider.stage}
-  result_stream: ${file(../../config.yml):result_stream}
-  result_arn: ${file(../../config.yml):result_arn}
 
 functions:
   scrape:

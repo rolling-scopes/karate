@@ -1,7 +1,7 @@
 import * as result from './models/result'
 import * as task from './models/task'
 import expressions from './expressions'
-import { createResponse } from '../shared/utils'
+import { createResponse } from '../../shared/utils'
 
 export const getResult = async (evt, ctx, cb) => {
   try {
@@ -10,6 +10,7 @@ export const getResult = async (evt, ctx, cb) => {
 
     cb(null, createResponse(200, Item))
   } catch (e) {
+    console.log(e)
     cb(null, createResponse(500, { err: e.message }))
   }
 }
@@ -38,6 +39,7 @@ export const addTask = async (evt, ctx, cb) => {
 
     cb(null, createResponse(200, { id: Item.id }))
   } catch (e) {
+    console.log(e)
     cb(null, createResponse(500, { err: e.message }))
   }
 }
@@ -52,6 +54,7 @@ export const findExpression = async (evt, ctx, cb) => {
 
     cb(null, createResponse(200, expression))
   } catch (e) {
+    console.log(e)
     cb(null, createResponse(500, { err: e.message }))
   }
 }
