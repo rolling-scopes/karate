@@ -10,7 +10,6 @@ const CHROME_OPTIONS = {
 
 const getQueryFromStream = record => {
   const { expression, url } = record.dynamodb.NewImage
-  console.log(expression, url)
   return { url: url.S, expression: expression.S }
 }
 
@@ -40,7 +39,7 @@ export const getResult = async (evt, ctx, cb) => {
   try {
     const id = evt.pathParameters.id
     const { Item } = await task.get(id)
-    const response = Item.res ? createResponse(200, Item) : createResponse(202)
+    const response = Item.res ? createResponse(200, { data: JSON.parse(Item.res) }) : createResponse(202)
 
     cb(null, response)
   } catch (e) {
