@@ -1,4 +1,3 @@
-import * as BPromise from 'bluebird'
 import * as CDP from 'chrome-remote-interface'
 
 export interface Result {
@@ -14,7 +13,7 @@ export const scrape: Scrape = async ({ url, expression }) => {
 
   const { Page, Runtime } = client
 
-  await BPromise.all([Page.enable(), Runtime.enable()])
+  await Promise.all([Page.enable(), Runtime.enable()])
 
   await Page.navigate({ url })
   await Page.loadEventFired()
