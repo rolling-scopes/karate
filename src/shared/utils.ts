@@ -1,5 +1,5 @@
-export const createResponse = (statusCode, body) => ({
+export const createResponse = (statusCode, body?) => ({
   statusCode,
   headers: { 'Access-Control-Allow-Origin': '*' },
-  body: JSON.stringify(body),
+  body: body ? JSON.stringify(body) : null,
 })

@@ -11,10 +11,8 @@
     "prettier": "prettier --no-semi --single-quote --trailing-comma all --write \"src/**/*.ts\"",
     "test:watch": "jest --watch",
     "upgrade-dependencies": "ncu -a",
-    "deploy:api": "cd src/api && sls deploy",
-    "remove:api": "cd src/api && sls remove",
-    "deploy:scraper": "cd src/scraper && sls deploy",
-    "remove:scraper": "cd src/scraper && sls remove"
+    "deploy:scraper": "cd src/services/scraper && sls deploy",
+    "remove:scraper": "cd src/services/scraper && sls remove"
   },
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",

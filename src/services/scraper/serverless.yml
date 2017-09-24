@@ -5,12 +5,12 @@ plugins:
   - serverless-webpack
 
 custom:
-  webpack: '../../webpack.config.js'
+  webpack: '../../../webpack.config.js'
   webpackIncludeModules:
-    packagePath: '../../package.json'
+    packagePath: '../../../package.json'
+  prefix: ${self:custom.stage}-${self:service}
   stage: ${opt:stage, self:provider.stage}
-  result_stream: ${file(../../config.yml):result_stream}
-  result_arn: ${file(../../config.yml):result_arn}
+  task_table: ${self:custom.prefix}-task
 
 provider:
   name: aws
@@ -20,12 +20,13 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-      - sns:*
-      Resource: arn:aws:sns:*:*:*
+      - dynamodb:*
+      Resource: arn:aws:dynamodb:*:*:table/*
   environment:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
-    result_arn: ${self:custom.result_arn}
+    task_table: ${self:custom.task_table}
+    task_stream: ${file(../../../config.yml):task_stream}
 
 functions:
   scrape:
@@ -33,9 +34,51 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
+      - stream: ${self:provider.environment.task_stream}
+
+  addTask:
+    handler: handler.addTask
+    name: ${self:custom.prefix}-addTask
+    events:
       - http:
           method: post
-          path: scrape
+          path: tasks
           cors: true
-      - stream: ${self:custom.result_stream}
 
+  getResult:
+    handler: handler.getResult
+    name: ${self:custom.prefix}-getResult
+    events:
+      - http:
+          method: get
+          path: results/{id}
+          cors: true
+
+  findExpression:
+    handler: handler.findExpression
+    name: ${self:custom.prefix}-findExpression
+    events:
+      - http:
+          method: post
+          path: expression
+          cors: true
+
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.task_table}
+        KeySchema:
+          -
+            AttributeName: task_id
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: task_id
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
