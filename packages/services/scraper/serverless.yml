@@ -19,7 +19,7 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
-  versionFunctions: false
+  versionFunctions: ${self:custom.versions-${self:custom.stage}, self:custom.versions-default}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,7 +29,7 @@ provider:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     task_table: ${self:custom.task_table}
-    task_stream: ${file(../../../config.yml):task_stream}
+    task_stream: ${file(./config.yml):task_stream}
 
 functions:
   scrape:
