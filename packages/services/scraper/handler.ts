@@ -2,7 +2,7 @@ import * as chrome from '@serverless-chrome/lambda'
 import * as scraper from './lib/scraper'
 import * as task from './models/task'
 import expressions from './expressions'
-import { createResponse } from '../../shared/utils'
+import { createResponse } from '../shared/utils'
 
 const CHROME_OPTIONS = {
   flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
@@ -39,7 +39,9 @@ export const getResult = async (evt, ctx, cb) => {
   try {
     const id = evt.pathParameters.id
     const { Item } = await task.get(id)
-    const response = Item.res ? createResponse(200, { data: JSON.parse(Item.res) }) : createResponse(202)
+    const response = Item.res
+      ? createResponse(200, { data: JSON.parse(Item.res) })
+      : createResponse(202)
 
     cb(null, response)
   } catch (e) {

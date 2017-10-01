@@ -5,17 +5,21 @@ const client = new DynamoDB.DocumentClient({
   region: process.env.region,
 })
 
+const getTaskId = ({ url, expression }) =>
+  crypto
+  .createHash('sha256')
+  .update(`${url}${expression}`, 'utf8')
+  .digest('hex')
+
 export const add = async (url, expression) => {
-  const task_id = crypto
-    .createHash('sha256')
-    .update(`${url}${expression}`, 'utf8')
-    .digest('hex')
+  const task_id = getTaskId({ url, expression })
+
   const params = {
     TableName: String(process.env.task_table),
     Item: {
       task_id,
       url,
-      expression
+      expression,
     },
   }
 
@@ -41,10 +45,7 @@ export const get = async task_id => {
 }
 
 export const update = async ({ query, value }) => {
-  const task_id = crypto
-    .createHash('sha256')
-    .update(`${query.url}${query.expression}`, 'utf8')
-    .digest('hex')
+  const task_id = getTaskId(query)
 
   const params = {
     TableName: String(process.env.task_table),
