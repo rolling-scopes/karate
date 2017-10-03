@@ -8,11 +8,17 @@
     "test": "jest",
     "prettier": "prettier --config .prettierrc --write \"packages/**/*.ts\"",
     "test:watch": "jest --watch",
-    "deploy:scraper": "cd packages/services/scraper && yarn run deploy",
-    "remove:scraper": "cd packages/services/scraper && yarn run remove"
+    "deploy:scraper": "cd packages/services/scraper && sls deploy",
+    "remove:scraper": "cd packages/services/scraper && sls remove"
   },
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
+  "dependencies": {
+    "@serverless-chrome/lambda": "^1.0.0-5",
+    "chrome-remote-interface": "^0.24.5",
+    "aws-xray-sdk-core": "^1.1.4",
+    "winston": "^2.3.1"
+  },
   "devDependencies": {
     "@types/bluebird": "^3.5.12",
     "@types/jest": "^21.1.1",
@@ -25,6 +31,7 @@
     "lint-staged": "^4.2.3",
     "pre-commit": "^1.2.2",
     "prettier": "^1.7.3",
+    "serverless-plugin-tracing": "^1.1.0",
     "serverless-webpack": "3.1.0",
     "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
