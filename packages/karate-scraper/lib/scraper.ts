@@ -1,3 +1,4 @@
+import * as chrome from '@serverless-chrome/lambda'
 import * as CDP from 'chrome-remote-interface'
 
 export interface Result {
@@ -7,7 +8,16 @@ export interface Scrape {
   (query: { url: string; expression: string }): Promise<Result>
 }
 
+const CHROME_OPTIONS = {
+  flags: [
+    '--window-size=1280x1696',
+    '--ignore-certificate-errors'
+  ]
+}
+
 export const scrape: Scrape = async ({ url, expression }) => {
+  await chrome(CHROME_OPTIONS)
+
   const target = await CDP.New()
   const client = await CDP({ target })
 

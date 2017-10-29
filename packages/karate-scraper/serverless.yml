@@ -3,38 +3,30 @@ service:
 
 plugins:
   - serverless-webpack
-  - serverless-plugin-tracing
+  - serverless-dynamodb-local
+  - serverless-offline
 
 custom:
-  webpack: '../../../webpack.config.js'
+  webpack: '../../webpack.config.js'
   webpackIncludeModules:
-    packagePath: '../../../package.json'
+    packagePath: './package.json'
   prefix: ${self:custom.stage}-${self:service}
   stage: ${opt:stage, self:provider.stage}
   task_table: ${self:custom.prefix}-task
-  is_versionFn-prod: true
-  is_versionFn-default: false
+  isVersionFunctions-prod: true
+  isVersionFunctions-default: false
 
 provider:
   name: aws
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
-  tracing: true
-  versionFunctions: ${self:custom.is_versionFn-${self:custom.stage}, self:custom.is_versionFn-default}
-  memorySize: 256
-  timeout: 120
+  versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: Allow
       Action:
       - dynamodb:*
       Resource: arn:aws:dynamodb:*:*:table/*
-    - Effect: "Allow"
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource:
-        - "*"
   environment:
     region: ${self:provider.region}
     stage: ${self:custom.stage}

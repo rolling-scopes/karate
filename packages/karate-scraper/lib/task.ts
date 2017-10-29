@@ -1,8 +1,6 @@
 import * as crypto from 'crypto'
-import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk-core'
+import { DynamoDB } from 'aws-sdk'
 
-const { DynamoDB } = AWSXRay.captureAWS(AWS)
 const client = new DynamoDB.DocumentClient({ region: process.env.region })
 
 const getTaskId = ({ url, expression }) =>
@@ -34,22 +32,21 @@ export const add = async (url: string, expression: string) => {
   return Item.task_id
 }
 
-export const get = async task_id => {
-  return await client
-  .get({
-    TableName: String(process.env.task_table),
-    Key: { task_id },
-  }).promise()
-}
+export const get = task_id =>
+  client
+    .get({
+      TableName: String(process.env.task_table),
+      Key: { task_id },
+    })
+    .promise()
 
-export const update = async ({ query, value }) => {
-  const task_id = getTaskId(query)
-
-  return await client.update({
-    TableName: String(process.env.task_table),
-    Key: { task_id },
-    UpdateExpression: 'set res = :r',
-    ExpressionAttributeValues: { ':r': value },
-    ReturnValues: 'UPDATED_NEW',
-  }).promise()
-}
+export const update = ({ query, value }) =>
+  client
+    .update({
+      TableName: String(process.env.task_table),
+      Key: { task_id: getTaskId(query) },
+      UpdateExpression: 'set res = :r',
+      ExpressionAttributeValues: { ':r': value },
+      ReturnValues: 'UPDATED_NEW',
+    })
+    .promise()

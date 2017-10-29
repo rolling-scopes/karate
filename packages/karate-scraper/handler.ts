@@ -1,23 +1,16 @@
-import * as chrome from '@serverless-chrome/lambda'
 import * as scraper from './lib/scraper'
-import * as task from './models/task'
-import expressions from './expressions'
-import { createResponse } from '../shared/utils'
+import * as task from './lib/task'
+import { createExpression } from './expressions'
+import { createResponse } from './lib/utils'
 
-const CHROME_OPTIONS = {
-  flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
-}
-
-const getQueryFromStream = record => {
-  const { expression, url } = record.dynamodb.NewImage
+const getQueryFromStream = evt => {
+  const { expression, url } = evt.Records[0].dynamodb.NewImage
   return { url: url.S, expression: expression.S }
 }
 
 export const scrape = async (evt, ctx, cb) => {
   try {
-    await chrome(CHROME_OPTIONS)
-
-    const query = getQueryFromStream(evt.Records[0])
+    const query = getQueryFromStream(evt)
 
     if (!query.url || !query.expression) throw new Error('Empty query')
 
@@ -71,7 +64,7 @@ export const findExpression = async (evt, ctx, cb) => {
 
     if (!pageName || !meta) throw new Error('Missed name or meta')
 
-    const expression = expressions(pageName, meta)
+    const expression = createExpression(pageName, meta)
 
     cb(null, createResponse(200, expression))
   } catch (e) {
