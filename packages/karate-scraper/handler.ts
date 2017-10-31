@@ -5,8 +5,8 @@ import { createResponse } from './lib/utils'
 import logger from './lib/logger'
 
 const getQueryFromStream = evt => {
-  const { expression, url } = evt.Records[0].dynamodb.NewImage
-  return { url: url.S, expression: expression.S }
+  const image = evt.Records[0].dynamodb.NewImage
+  return image ? { url: image.url.S, expression: image.expression.S } : null
 }
 
 export const scrape = async (evt, ctx, cb) => {
@@ -17,7 +17,7 @@ export const scrape = async (evt, ctx, cb) => {
 
     logger.info('Query: ', { query })
 
-    if (!query.url || !query.expression) throw new Error('Empty query')
+    if (!query || !query.url || !query.expression) throw new Error('Empty query')
 
     const { result } = await scraper.scrape(query)
 
