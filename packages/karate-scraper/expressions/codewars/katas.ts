@@ -8,40 +8,41 @@ export interface KatasSelector {
 }
 
 const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
-  `const d = new Promise((resolve, reject) => {
+  `const d = async () => {
+    const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
     const grabKatas = solvedKataSelector =>
       [...document.querySelectorAll(solvedKataSelector)]
         .map(el => el.innerHTML)
         .map(text => text.toLowerCase().trim());
+
     const getPageHeight = () => document.body.scrollHeight;
+
     const delay = timeout => new Promise(resolve => setTimeout(() => resolve(), timeout));
 
     const hasNotKatas = solvedKataSelector =>
       document.querySelectorAll(solvedKataSelector).length === 0;
 
-    if (hasNotKatas('${solvedKatasSelector}')) return reject(new Error('has not katas'));
+    if (hasNotKatas('.list-item.kata .item-title a')) throw new Error('has not katas');
 
-    const waitUntilMultiplyIsReady = () =>
-      new Promise(async (resolve) => {
-        let previousHeight;
-        let currentHeight = 0;
-        const katas = grabKatas('${solvedKatasSelector}')
-        while (previousHeight !== currentHeight) {
-          previousHeight = currentHeight;
-          currentHeight = getPageHeight();
-          window.scrollTo(0, currentHeight);
-        }
-        if (katas.indexOf('multiply') !== -1) resolve();
-        waitUntilMultiplyIsReady().then(resolve);
-      });
+    const waitUntilMultiplyIsReady = async () => {
+      let previousHeight;
+      let currentHeight = 0;
+      const now = Date.now();
 
-      waitUntilMultiplyIsReady()
-        .then(() => {
-          const katas = grabKatas('${solvedKatasSelector}');
-          resolve(katas);
-        });
-  });
-  d.then(res => JSON.stringify(res));
+      while (previousHeight !== currentHeight ||  Date.now() - now > 230000) {
+        previousHeight = currentHeight;
+        currentHeight = getPageHeight();
+        window.scrollTo(0, currentHeight);
+        await delay(random(1000, 3000));
+      };
+    };
+
+    await waitUntilMultiplyIsReady();
+
+    return grabKatas('.list-item.kata .item-title a');
+  };
+  d().then(res => JSON.stringify(res))
   `
 export const expression = () => createKatasExpression(SELECTORS)
 export const url = ({ userName }) => `${CODEWARS}/users/${userName}/completed`

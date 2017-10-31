@@ -1,0 +1,19 @@
+{
+  "name": "karate-scraper",
+  "version": "0.0.1",
+  "scripts": {
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "package": "sls package"
+  },
+  "author": "siarhei.m.a@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless-chrome/lambda": "^1.0.0-6",
+    "chrome-remote-interface": "^0.25.2",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.141.0"
+  }
+}

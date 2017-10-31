@@ -3,43 +3,35 @@ service:
 
 plugins:
   - serverless-webpack
-  - serverless-plugin-tracing
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-pseudo-parameters
 
 custom:
-  webpack: '../../../webpack.config.js'
+  webpack: '../../webpack.config.js'
   webpackIncludeModules:
-    packagePath: '../../../package.json'
+    packagePath: './package.json'
   prefix: ${self:custom.stage}-${self:service}
   stage: ${opt:stage, self:provider.stage}
   task_table: ${self:custom.prefix}-task
-  is_versionFn-prod: true
-  is_versionFn-default: false
+  isVersionFunctions-prod: true
+  isVersionFunctions-default: false
 
 provider:
   name: aws
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
-  tracing: true
-  versionFunctions: ${self:custom.is_versionFn-${self:custom.stage}, self:custom.is_versionFn-default}
-  memorySize: 256
-  timeout: 120
+  versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: Allow
       Action:
       - dynamodb:*
-      Resource: arn:aws:dynamodb:*:*:table/*
-    - Effect: "Allow"
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource:
-        - "*"
+      Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/*
   environment:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     task_table: ${self:custom.task_table}
-    task_stream: ${file(./config.yml):task_stream}
 
 functions:
   scrape:
@@ -47,7 +39,7 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
-      - stream: ${self:provider.environment.task_stream}
+      - stream: arn:aws:dynamodb:eu-west-1:550997613790:table/test-karate-scraper-task/stream/2017-10-30T08:35:14.279
 
   addTask:
     handler: handler.addTask
@@ -91,7 +83,7 @@ resources:
             AttributeName: task_id
             AttributeType: S
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
         StreamSpecification:
           StreamViewType: NEW_IMAGE

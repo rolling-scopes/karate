@@ -6,8 +6,6 @@ const nodeExternals = require('webpack-node-externals');
 const BabiliPlugin = require('babili-webpack-plugin');
 const slsw = require('serverless-webpack');
 
-const NODE_MODULES_DIR = path.join(__dirname, 'node_modules');
-
 module.exports = {
   entry: slsw.lib.entries,
   output: {
@@ -16,9 +14,7 @@ module.exports = {
     filename: '[name].js'
   },
   target: 'node',
-  externals: [nodeExternals({
-    modulesDir: NODE_MODULES_DIR
-  })],
+  externals: [nodeExternals()],
   resolve: {
     extensions: ['.ts'],
     modules: ['node_modules']
@@ -39,6 +35,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new BabiliPlugin(),
+    // new BabiliPlugin(),
   ]
 };
