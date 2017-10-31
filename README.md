@@ -6,7 +6,7 @@
  - Install serverless `npm i -g serverless`
  - Create AWS Credentials
  - Install packages `yarn`
- - Run `sls deploy`
+ - Run `npm run deploy:scrapers`
 
 ## Licence
 

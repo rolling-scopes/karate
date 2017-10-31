@@ -32,6 +32,7 @@
     "serverless-dynamodb-local": "^0.2.26",
     "serverless-offline": "^3.16.0",
     "serverless-webpack": "3.1.2",
+    "serverless-pseudo-parameters": "^1.2.5",
     "ts-jest": "^21.1.4",
     "tslint": "^5.8.0",
     "tslint-config-standard": "^7.0.0",

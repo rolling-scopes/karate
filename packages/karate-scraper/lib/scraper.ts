@@ -9,10 +9,7 @@ export interface Scrape {
 }
 
 const CHROME_OPTIONS = {
-  flags: [
-    '--window-size=1280x1696',
-    '--ignore-certificate-errors'
-  ]
+  flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
 }
 
 export const scrape: Scrape = async ({ url, expression }) => {

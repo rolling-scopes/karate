@@ -5057,6 +5057,13 @@ serverless-offline@^3.16.0:
     lodash "^4.17.4"
     velocityjs "^0.9.3"
 
+serverless-pseudo-parameters@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/serverless-pseudo-parameters/-/serverless-pseudo-parameters-1.2.5.tgz#b111f44df939a4051999df198a3c11478f135cc3"
+  dependencies:
+    chalk "^1.1.1"
+    lodash "^4.13.1"
+
 serverless-webpack@3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/serverless-webpack/-/serverless-webpack-3.1.2.tgz#f1ee61649414e141a1659cdce0ad6294a414d470"
