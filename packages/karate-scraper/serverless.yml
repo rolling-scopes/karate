@@ -40,7 +40,7 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
-      - stream: arn:aws:dynamodb:eu-west-1:550997613790:table/test-karate-scraper-task/stream/2017-10-30T08:35:14.279
+      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/test-karate-scraper-task/stream/2017-11-01T13:43:34.626
 
   addTask:
     handler: handler.addTask
