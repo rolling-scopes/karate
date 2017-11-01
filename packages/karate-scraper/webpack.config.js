@@ -25,7 +25,7 @@ module.exports = {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader',
         options: {
-          configFileName: path.join(__dirname , 'tsconfig.webpack.json'),
+          configFileName: path.join(__dirname , '../../tsconfig.webpack.json'),
           transpileOnly: true
         }
       }

@@ -26,6 +26,7 @@ export const scrape: Scrape = async ({ url, expression }) => {
   await Page.loadEventFired()
 
   const result = await Runtime.evaluate({ expression, awaitPromise: true })
+
   const { id } = client.target
   await CDP.Close({ id })
 
