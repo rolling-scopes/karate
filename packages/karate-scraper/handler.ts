@@ -25,7 +25,7 @@ export const scrape = async (evt, ctx, cb) => {
 
     const { value } = result
 
-    await task.update({ query, value: value || 'empty value' })
+    await task.update({ query, value })
 
     cb(null)
   } catch (e) {
@@ -38,18 +38,20 @@ export const getResult = async (evt, ctx, cb) => {
   try {
     const id = evt.pathParameters.id
 
-    const { Item } = await task.get(id)
+    if (!id) throw new Error('ID is required')
 
-    logger.info('Task item: ', Item)
+    const { Items } = await task.getLatest(id)
 
-    const response = Item.res
-      ? createResponse(200, { data: JSON.parse(Item.res) })
+    logger.info('Task item: ', Items)
+
+    const response = Items[0].res
+      ? createResponse(200, { data: JSON.parse(Items[0].res) })
       : createResponse(202)
 
     cb(null, response)
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(500, { err: e.message }))
+    cb(null, createResponse(400, { err: e.message }))
   }
 }
 
@@ -61,14 +63,14 @@ export const addTask = async (evt, ctx, cb) => {
 
     if (!url || !expression) throw new Error('Missed url or expression')
 
-    const id = await task.add(url, expression)
+    const { task_id } = await task.add(url, expression)
 
-    logger.info('Task id: ', { id })
+    logger.info('Task id: ', { task_id })
 
-    cb(null, createResponse(202, { id }))
+    cb(null, createResponse(202, { id: task_id }))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(500, { err: e.message }))
+    cb(null, createResponse(400, { err: e.message }))
   }
 }
 
@@ -87,6 +89,6 @@ export const findExpression = async (evt, ctx, cb) => {
     cb(null, createResponse(200, expression))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(500, { err: e.message }))
+    cb(null, createResponse(400, { err: e.message }))
   }
 }

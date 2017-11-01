@@ -9,6 +9,8 @@
     "postinstall": "lerna bootstrap",
     "prettier": "prettier --config .prettierrc --write \"packages/**/*.ts\"",
     "test:watch": "jest --watch",
+    "dynamodb:scraper": "lerna run dynamodb --scope karate-scraper",
+    "dev:scraper": "lerna run dev --scope karate-scraper --stream",
     "package:scraper": "lerna run package --scope karate-scraper --stream",
     "deploy:scraper": "lerna run deploy --scope karate-scraper --stream",
     "remove:scraper": "lerna run remove --scope karate-scraper --stream"

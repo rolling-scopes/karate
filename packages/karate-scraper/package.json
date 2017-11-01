@@ -4,7 +4,9 @@
   "scripts": {
     "deploy": "sls deploy",
     "remove": "sls remove",
-    "package": "sls package"
+    "package": "sls package",
+    "dynamodb": "sls dynamodb install",
+    "dev": "sls offline start --noTimeout --prefix test"
   },
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
