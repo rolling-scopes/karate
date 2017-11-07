@@ -1,42 +1,57 @@
+import { Handler } from 'aws-lambda'
+import { createExpression } from './expressions'
+import logger from './lib/logger'
 import * as scraper from './lib/scraper'
 import * as task from './lib/task'
-import { createExpression } from './expressions'
 import { createResponse } from './lib/utils'
-import logger from './lib/logger'
 
-const getQueryFromStream = evt => {
-  const image = evt.Records[0].dynamodb.NewImage
-  return image ? { url: image.url.S, expression: image.expression.S } : null
+const getQueriesFromStream = evt => {
+  const records = evt.Records.filter(r => r.eventName === 'INSERT')
+
+  if (!records.length) return null;
+
+  const images = records.map(record => record.dynamodb.NewImage)
+
+  const queries = images.map(img => ({
+    url: img.url.S,
+    expression: img.expression.S,
+    timestamp: img.timestamp.N
+  }));
+
+  return queries
 }
 
-export const scrape = async (evt, ctx, cb) => {
+export const scrape: Handler = async (evt, ctx, cb) => {
   try {
-    logger.info('DynamoDB Stream Object: ', evt.Records[0].dynamodb)
+    logger.info('DynamoDB Stream Object: ', JSON.stringify(evt))
 
-    const query = getQueryFromStream(evt)
+    const queries = getQueriesFromStream(evt)
 
-    logger.info('Query: ', { query })
+    logger.info('Query: ', { queries })
 
-    if (!query || !query.url || !query.expression) throw new Error('Empty query')
+    if (!queries) {
+      throw new Error('Empty query list')
+    }
 
-    const { result } = await scraper.scrape(query)
+    const data = await Promise.all(queries.map(q => scraper.scrape(q)))
 
-    logger.info('Result: ', { result })
+    logger.info('Data: ', { data })
 
-    const { value } = result
-
-    await task.update({ query, value })
-
+    await Promise.all(data.map(d => task.update({
+      query: { url: d.url, expression: d.expression },
+      timestamp: d.timestamp,
+      value: d.value
+    })))
     cb(null)
   } catch (e) {
     logger.error(e)
-    cb(null)
+    cb(null) // disable retry policy
   }
 }
 
-export const getResult = async (evt, ctx, cb) => {
+export const getResult: Handler = async (evt, ctx, cb) => {
   try {
-    const id = evt.pathParameters.id
+    const id = evt.pathParameters!.id!
 
     if (!id) throw new Error('ID is required')
 
@@ -44,8 +59,8 @@ export const getResult = async (evt, ctx, cb) => {
 
     logger.info('Task item: ', Items)
 
-    const response = Items[0].res
-      ? createResponse(200, { data: JSON.parse(Items[0].res) })
+    const response = Items[0].result
+      ? createResponse(200, { data: JSON.parse(Items[0].result) })
       : createResponse(202)
 
     cb(null, response)
@@ -55,7 +70,7 @@ export const getResult = async (evt, ctx, cb) => {
   }
 }
 
-export const addTask = async (evt, ctx, cb) => {
+export const addTask: Handler = async (evt, ctx, cb) => {
   try {
     const { url, expression } = JSON.parse(evt.body)
 
@@ -74,7 +89,7 @@ export const addTask = async (evt, ctx, cb) => {
   }
 }
 
-export const findExpression = async (evt, ctx, cb) => {
+export const findExpression: Handler = async (evt, ctx, cb) => {
   try {
     const { pageName, meta } = JSON.parse(evt.body)
 

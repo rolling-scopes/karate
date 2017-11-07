@@ -33,6 +33,7 @@ provider:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     task_table: ${self:custom.task_table}
+    LOGGING: true
 
 functions:
   scrape:
@@ -40,7 +41,7 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
-      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/test-karate-scraper-task/stream/2017-11-01T13:43:34.626
+      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/test-karate-scraper-task/stream/2017-11-06T09:42:05.157
 
   addTask:
     handler: handler.addTask
