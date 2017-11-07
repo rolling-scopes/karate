@@ -1,0 +1,19 @@
+{
+  "name": "karate-director",
+  "version": "0.0.1",
+  "scripts": {
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "package": "sls package"
+  },
+  "author": "siarhei.m.a@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.145.0",
+    "@types/aws-lambda": "^0.0.19",
+    "@types/winston": "^2.3.7"
+  }
+}

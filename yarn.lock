@@ -382,6 +382,21 @@ aws-sdk@^2.7.0, aws-sdk@^2.75.0:
     xml2js "0.4.17"
     xmlbuilder "4.2.1"
 
+aws-sdk@^2.7.19:
+  version "2.146.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.146.0.tgz#e2d75585a030dae116ae32cbf42c496688d04efb"
+  dependencies:
+    buffer "4.9.1"
+    crypto-browserify "1.0.9"
+    events "^1.1.1"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.1.0"
+    xml2js "0.4.17"
+    xmlbuilder "4.2.1"
+
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -786,7 +801,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.4.6, bluebird@^3.5.0:
+bluebird@^3.4.0, bluebird@^3.4.6, bluebird@^3.5.0:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -5214,7 +5229,7 @@ serverless-offline@^3.16.0:
     lodash "^4.17.4"
     velocityjs "^0.9.3"
 
-serverless-plugin-chrome@^1.0.0-prerealize:
+serverless-plugin-chrome@^1.0.0-12:
   version "1.0.0-12"
   resolved "https://registry.yarnpkg.com/serverless-plugin-chrome/-/serverless-plugin-chrome-1.0.0-12.tgz#c5eb63595aeed7ba99257999edc649aa9bb5ef22"
   dependencies:
@@ -5226,6 +5241,15 @@ serverless-pseudo-parameters@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/serverless-pseudo-parameters/-/serverless-pseudo-parameters-1.2.5.tgz#b111f44df939a4051999df198a3c11478f135cc3"
   dependencies:
+    chalk "^1.1.1"
+    lodash "^4.13.1"
+
+serverless-step-functions@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-1.2.0.tgz#9287b6bedd31e199060ebf1335c24b1a155f82b9"
+  dependencies:
+    aws-sdk "^2.7.19"
+    bluebird "^3.4.0"
     chalk "^1.1.1"
     lodash "^4.13.1"
 

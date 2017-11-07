@@ -13,7 +13,10 @@
     "dev:scraper": "lerna run dev --scope karate-scraper --stream",
     "package:scraper": "lerna run package --scope karate-scraper --stream",
     "deploy:scraper": "lerna run deploy --scope karate-scraper --stream",
-    "remove:scraper": "lerna run remove --scope karate-scraper --stream"
+    "remove:scraper": "lerna run remove --scope karate-scraper --stream",
+    "package:director": "lerna run package --scope karate-director --stream",
+    "deploy:director": "lerna run deploy --scope karate-director --stream",
+    "remove:director": "lerna run remove --scope karate-director --stream"
   },
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
@@ -33,6 +36,7 @@
     "serverless-offline": "^3.16.0",
     "serverless-plugin-chrome": "^1.0.0-12",
     "serverless-pseudo-parameters": "^1.2.5",
+    "serverless-step-functions": "^1.2.0",
     "serverless-webpack": "3.1.2",
     "ts-jest": "^21.1.4",
     "tslint": "^5.8.0",
