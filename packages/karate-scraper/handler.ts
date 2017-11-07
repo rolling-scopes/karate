@@ -1,23 +1,32 @@
+import { Handler } from 'aws-lambda'
+import { createExpression } from './expressions'
+import logger from './lib/logger'
 import * as scraper from './lib/scraper'
 import * as task from './lib/task'
-import { createExpression } from './expressions'
 import { createResponse } from './lib/utils'
-import logger from './lib/logger'
 
 const getQueryFromStream = evt => {
-  const image = evt.Records[0].dynamodb.NewImage
-  return image ? { url: image.url.S, expression: image.expression.S } : null
+  const image = evt.Records[0].dynamodb.NewImage;
+  return image
+    ? {
+        url: image.url.S,
+        expression: image.expression.S,
+        timestamp: image.timestamp.N,
+      }
+    : null
 }
 
-export const scrape = async (evt, ctx, cb) => {
+export const scrape: Handler = async (evt, ctx, cb) => {
   try {
-    logger.info('DynamoDB Stream Object: ', evt.Records[0].dynamodb)
+    logger.info('DynamoDB Stream Object: ', JSON.stringify(evt))
 
     const query = getQueryFromStream(evt)
 
     logger.info('Query: ', { query })
 
-    if (!query || !query.url || !query.expression) throw new Error('Empty query')
+    if (!query || !query.url || !query.expression) {
+      throw new Error('Empty query')
+    }
 
     const { result } = await scraper.scrape(query)
 
@@ -25,18 +34,21 @@ export const scrape = async (evt, ctx, cb) => {
 
     const { value } = result
 
-    await task.update({ query, value })
-
+    await task.update({
+      query: { url: query.url, expression: query.expression },
+      timestamp: query.timestamp,
+      value,
+    })
     cb(null)
   } catch (e) {
     logger.error(e)
-    cb(null)
+    cb(null) // disable retry policy
   }
 }
 
-export const getResult = async (evt, ctx, cb) => {
+export const getResult: Handler = async (evt, ctx, cb) => {
   try {
-    const id = evt.pathParameters.id
+    const id = evt.pathParameters!.id!
 
     if (!id) throw new Error('ID is required')
 
@@ -44,8 +56,8 @@ export const getResult = async (evt, ctx, cb) => {
 
     logger.info('Task item: ', Items)
 
-    const response = Items[0].res
-      ? createResponse(200, { data: JSON.parse(Items[0].res) })
+    const response = Items[0].result
+      ? createResponse(200, { data: JSON.parse(Items[0].result) })
       : createResponse(202)
 
     cb(null, response)
@@ -55,7 +67,7 @@ export const getResult = async (evt, ctx, cb) => {
   }
 }
 
-export const addTask = async (evt, ctx, cb) => {
+export const addTask: Handler = async (evt, ctx, cb) => {
   try {
     const { url, expression } = JSON.parse(evt.body)
 
@@ -74,7 +86,7 @@ export const addTask = async (evt, ctx, cb) => {
   }
 }
 
-export const findExpression = async (evt, ctx, cb) => {
+export const findExpression: Handler = async (evt, ctx, cb) => {
   try {
     const { pageName, meta } = JSON.parse(evt.body)
 

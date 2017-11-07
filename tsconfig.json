@@ -4,14 +4,10 @@
 		"target": "es6",
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"preserveConstEnums": true,
-		"noUnusedLocals": true,
-		"removeComments": true,
-    "strictNullChecks": true,
+		"strict": false,
     "pretty": true,
 		"lib": [
-			"es6",
-			"es2016"
+			"es2017"
 		]
 	},
   "exclude": [

@@ -1,5 +1,8 @@
 import * as scraper from '../../lib/scraper'
-import { expression as katasExpression, url as katasAddr } from '../codewars/katas'
+import {
+  expression as katasExpression,
+  url as katasAddr,
+} from '../codewars/katas'
 
 test('Scrape katas', async () => {
   const url = katasAddr({ userName: 'SiarheiMelnik' })

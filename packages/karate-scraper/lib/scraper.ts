@@ -4,16 +4,16 @@ import * as CDP from 'chrome-remote-interface'
 export interface Result {
   result: { value: string }
 }
-export interface Scrape {
-  (query: { url: string; expression: string }): Promise<Result>
-}
 
-const CHROME_OPTIONS = {
-  flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
-}
+let started = false;
 
-export const scrape: Scrape = async ({ url, expression }) => {
-  await chrome(CHROME_OPTIONS)
+export const scrape = async ({ url, expression }: { url: string; expression: string }): Promise<Result> => {
+  if (!started) {
+    await chrome({
+      flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
+    })
+    started = true
+  }
 
   const target = await CDP.New()
   const client = await CDP({ target })
