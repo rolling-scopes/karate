@@ -5,40 +5,43 @@ import * as scraper from './lib/scraper'
 import * as task from './lib/task'
 import { createResponse } from './lib/utils'
 
-const getQueryFromStream = evt => {
-  const image = evt.Records[0].dynamodb.NewImage;
-  return image
-    ? {
-        url: image.url.S,
-        expression: image.expression.S,
-        timestamp: image.timestamp.N,
-      }
-    : null
+const getQueriesFromStream = evt => {
+  const records = evt.Records.filter(r => r.eventName === 'INSERT')
+
+  if (!records.length) return null;
+
+  const images = records.map(record => record.dynamodb.NewImage)
+
+  const queries = images.map(img => ({
+    url: img.url.S,
+    expression: img.expression.S,
+    timestamp: img.timestamp.N
+  }));
+
+  return queries
 }
 
 export const scrape: Handler = async (evt, ctx, cb) => {
   try {
     logger.info('DynamoDB Stream Object: ', JSON.stringify(evt))
 
-    const query = getQueryFromStream(evt)
+    const queries = getQueriesFromStream(evt)
 
-    logger.info('Query: ', { query })
+    logger.info('Query: ', { queries })
 
-    if (!query || !query.url || !query.expression) {
-      throw new Error('Empty query')
+    if (!queries) {
+      throw new Error('Empty query list')
     }
 
-    const { result } = await scraper.scrape(query)
+    const data = await Promise.all(queries.map(q => scraper.scrape(q)))
 
-    logger.info('Result: ', { result })
+    logger.info('Data: ', { data })
 
-    const { value } = result
-
-    await task.update({
-      query: { url: query.url, expression: query.expression },
-      timestamp: query.timestamp,
-      value,
-    })
+    await Promise.all(data.map(d => task.update({
+      query: { url: d.url, expression: d.expression },
+      timestamp: d.timestamp,
+      value: d.value
+    })))
     cb(null)
   } catch (e) {
     logger.error(e)

@@ -33,6 +33,7 @@ provider:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     task_table: ${self:custom.task_table}
+    LOGGING: true
 
 functions:
   scrape:

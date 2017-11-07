@@ -31,6 +31,7 @@
     "serverless": "^1.24.0",
     "serverless-dynamodb-local": "^0.2.26",
     "serverless-offline": "^3.16.0",
+    "serverless-plugin-chrome": "^1.0.0-12",
     "serverless-pseudo-parameters": "^1.2.5",
     "serverless-webpack": "3.1.2",
     "ts-jest": "^21.1.4",
