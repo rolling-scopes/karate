@@ -1,0 +1,24 @@
+{
+  "name": "codewarsclassifier",
+  "version": "0.0.1",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "package": "sls package",
+    "dynamodb": "sls dynamodb install",
+    "dev": "env-cmd .env sls offline start --noTimeout --prefix test --port 3001"
+  },
+  "author": "tikhon.scherbakov@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "env-cmd": "^7.0.0",
+    "google-auth-library": "^0.11.0",
+    "googleapis": "^22.2.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.142.0",
+    "webpack": "^3.8.1"
+  }
+}
