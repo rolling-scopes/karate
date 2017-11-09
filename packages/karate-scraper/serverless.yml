@@ -45,7 +45,6 @@ functions:
 
   addTask:
     handler: handler.addTask
-    name: ${self:custom.prefix}-addTask
     events:
       - http:
           method: post
@@ -54,7 +53,6 @@ functions:
 
   getResult:
     handler: handler.getResult
-    name: ${self:custom.prefix}-getResult
     events:
       - http:
           method: get
@@ -63,7 +61,6 @@ functions:
 
   findExpression:
     handler: handler.findExpression
-    name: ${self:custom.prefix}-findExpression
     events:
       - http:
           method: post

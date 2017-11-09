@@ -1,0 +1,66 @@
+service:
+  name: karate-sensei
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-step-functions
+  - serverless-webpack
+
+custom:
+  webpackIncludeModules: true
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:service}-${self:custom.stage}
+  isVersionFunctions-prod: true
+  isVersionFunctions-default: false
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1
+  stage: test
+  versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "states:StartExecution"
+      Resource:
+        - "*"
+
+functions:
+  startCodewarsKatasStart:
+    handler: handler.startCodewarsKatas
+    events:
+      - http:
+          method: post
+          path: codewars/katas
+          cors: true
+    environment:
+      statemachine_arn: ${self:resources.Outputs.CodewarsKatas.Value}
+  findExpression:
+     handler: handler.findExpression
+  scrapeKatas:
+     handler: handler.scrapeKatas
+
+stepFunctions:
+  stateMachines:
+    codewarsKatas:
+      name: codewarsKatas
+      definition:
+        Comment: Scrape Katas Codewars
+        StartAt: FindExpression
+        States:
+          FindExpression:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression"
+            Next: ScrapeKatas
+          ScrapeKatas:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-scrapeKatas"
+            End: true
+
+resources:
+  Outputs:
+    CodewarsKatas:
+      Description: The ARN of the state machine
+      Value:
+        Ref: CodewarsKatas
