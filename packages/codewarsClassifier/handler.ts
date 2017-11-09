@@ -9,33 +9,33 @@ export const createResponse = (statusCode, body?) => ({
 })
 
 export const evaluate = async (evt, ctx, cb) => {
-    const { userName, katas } = JSON.parse(evt.body)
-    const response: any = {
-        body: {
-            userName,
-            message: ''
-        }
+  const { userName, katas } = JSON.parse(evt.body)
+  const response: any = {
+    body: {
+      userName,
+      message: ''
     }
-    writeToSheet(userName, classify(katas))
-        .then(data => {
-            response.body.message = data
-            cb(null, createResponse(200, response.body));
-        }).catch(err => {
-            response.body.message = err
-            cb(null, createResponse(400, response.body))
-        });
+  }
+  writeToSheet(userName, classify(katas))
+    .then(data => {
+      response.body.message = data
+      cb(null, createResponse(200, response.body));
+    }).catch(err => {
+      response.body.message = err
+      cb(null, createResponse(400, response.body))
+    })
 }
 
 export const getStudentsCodewarsNickNames = async (evt, ctx, cb) => {
-    const response: any = {
-        body: {}
-    }
-    getCodewarsNicknames()
-        .then(data => {
-            response.body.students = data
-            cb(null, createResponse(200, response.body));
-        }).catch(err => {
-            response.body.message = err
-            cb(null, createResponse(400, response.body))
-        });
+  const response: any = {
+    body: {}
+  }
+  getCodewarsNicknames()
+    .then(data => {
+      response.body.students = data
+      cb(null, createResponse(200, response.body));
+    }).catch(err => {
+      response.body.message = err
+      cb(null, createResponse(400, response.body))
+    })
 }
