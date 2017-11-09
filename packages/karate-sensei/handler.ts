@@ -26,15 +26,13 @@ export const startCodewarsKatas = async (evt, ctx, cb) => {
 
 export const findExpression = async (evt, ctx, cb) => {
   try {
-    const body = {
-      "pageName": "katas",
-      "meta": { "userName": evt.user}
-    };
-
     const data = await rq({
       method: 'POST',
       uri: `${entrypoint}/test/expression`,
-      body,
+      body: {
+        "pageName": "katas",
+        "meta": { "userName": evt.user}
+      },
       json: true
     });
 
@@ -46,16 +44,17 @@ export const findExpression = async (evt, ctx, cb) => {
 
 export const scrapeKatas = async (evt, ctx, cb) => {
   try {
-    const data = await rq({
+    const { statusCode, body } = await rq({
       method: 'POST',
       uri: `${entrypoint}/test/tasks`,
       body: {
         ...evt.data
       },
+      resolveWithFullResponse: true,
       json: true
     });
 
-    cb(null, { data });
+    cb(null, { statusCode, data: body });
   } catch (e) {
     cb(e)
   }
