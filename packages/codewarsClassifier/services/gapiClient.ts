@@ -3,7 +3,7 @@ const google = require('googleapis')
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-export function getJwtClient() {
+export function getJwtClient () {
   return new google.auth.JWT(
     key.client_email,
     '../key.pem',

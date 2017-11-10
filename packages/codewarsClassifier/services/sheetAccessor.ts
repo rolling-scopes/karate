@@ -7,18 +7,21 @@ const RANGES = {
 
 let sheets = null
 
-export function getCodewarsNicknames() {
+export function getCodewarsNicknames () {
   return new Promise((resolve, reject) => {
     const jwtClient = getJwtClient()
-    jwtClient.authorize((err, tokens) => {
+    jwtClient.authorize(async (err, tokens) => {
       if (err) reject(err)
       sheets = google.sheets({
         version: 'v4',
         auth: jwtClient
       })
-      getCodewarsNicknamesFromSheet()
-        .then(data => resolve(data))
-        .catch(err => reject(err))
+      try {
+        const data = await getCodewarsNicknamesFromSheet();
+        resolve(data)
+      } catch (err) {
+        reject(err)
+      }
     })
   })
 }
