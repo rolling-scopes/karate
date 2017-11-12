@@ -18,6 +18,8 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
+  environment:
+    SCRAPER_ENDPOINT: ${file(./config.yml):SCRAPER_ENDPOINT}
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: "Allow"
@@ -36,10 +38,18 @@ functions:
           cors: true
     environment:
       statemachine_arn: ${self:resources.Outputs.CodewarsKatas.Value}
-  findExpression:
-     handler: handler.findExpression
-  scrapeKatas:
-     handler: handler.scrapeKatas
+
+  findKatasExpression:
+    handler: handler.findKatasExpression
+
+  addScrapeTask:
+    handler: handler.addScrapeTask
+
+  getResults:
+    handler: handler.getResults
+
+  sentResults:
+    handler: handler.sentResults
 
 stepFunctions:
   stateMachines:
@@ -51,12 +61,41 @@ stepFunctions:
         States:
           FindExpression:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression"
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findKatasExpression
             Next: ScrapeKatas
           ScrapeKatas:
             Type: Task
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-scrapeKatas"
+            InputPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-addScrapeTask
+            Next: WaitScrapeResults
+          GetResult:
+            Type: Task
+            InputPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
+            Next: CheckStatus
+          WaitScrapeResults:
+            Type: Wait
+            Seconds: 10
+            Next: GetResult
+          CheckStatus:
+            Type: Choice
+            Choices:
+              -
+                Variable: $.statusCode
+                NumericEquals: 202
+                Next: WaitScrapeResults
+              -
+                Variable: $.statusCode
+                NumericEquals: 200
+                Next: SentResults
+            Default: DefaultState
+          SentResults:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-sentResults
             End: true
+          DefaultState:
+            Type: Fail
+            Cause: No Matches
 
 resources:
   Outputs:

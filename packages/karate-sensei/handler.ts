@@ -1,10 +1,8 @@
-import 'request'
-import rq from 'request-promise-native'
 import { StepFunctions } from 'aws-sdk'
+import * as api from './lib/api'
 import { createResponse } from './lib/utils'
 
 const stepfunctions = new StepFunctions();
-const entrypoint = 'https://skjivf6gw0.execute-api.eu-west-1.amazonaws.com'
 
 export const startCodewarsKatas = async (evt, ctx, cb) => {
   try {
@@ -24,37 +22,37 @@ export const startCodewarsKatas = async (evt, ctx, cb) => {
   }
 }
 
-export const findExpression = async (evt, ctx, cb) => {
+export const findKatasExpression = async (evt, ctx, cb) => {
   try {
-    const data = await rq({
-      method: 'POST',
-      uri: `${entrypoint}/test/expression`,
-      body: {
-        "pageName": "katas",
-        "meta": { "userName": evt.user}
-      },
-      json: true
-    });
-
+    const data = await api.findExpression('katas', evt);
     cb(null, { data });
   } catch (e) {
     cb(e)
   }
 }
 
-export const scrapeKatas = async (evt, ctx, cb) => {
+export const addScrapeTask = async (evt, ctx, cb) => {
   try {
-    const { statusCode, body } = await rq({
-      method: 'POST',
-      uri: `${entrypoint}/test/tasks`,
-      body: {
-        ...evt.data
-      },
-      resolveWithFullResponse: true,
-      json: true
-    });
+    const data = await api.addScrapeTask(evt)
+    cb(null, { data });
+  } catch (e) {
+    cb(e)
+  }
+}
 
-    cb(null, { statusCode, data: body });
+export const getResults = async (evt, ctx, cb) => {
+  try {
+    const { statusCode, data } = await api.getResults(evt)
+    cb(null, { statusCode, data });
+  } catch (e) {
+    cb(e)
+  }
+}
+
+export const sentResults = async (evt, ctx, cb) => {
+  try {
+    console.log(evt);
+    cb(null);
   } catch (e) {
     cb(e)
   }
