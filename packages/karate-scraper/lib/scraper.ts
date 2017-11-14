@@ -3,11 +3,19 @@ import * as CDP from 'chrome-remote-interface'
 import logger from './logger';
 
 export interface Result {
-  value: string; url: string; expression: string; timestamp: number
+  url: string;
+  expression: string;
+  timestamp: number;
+  value: string | null;
+}
+interface ScrapeQuery {
+  url: string;
+  expression: string;
+  timestamp: number;
 }
 let isStarted = false;
 
-export const scrape = async ({ url, expression, timestamp }: { url: string; expression: string; timestamp: number }): Promise<Result> => {
+export const scrape = async ({ url, expression, timestamp }: ScrapeQuery): Promise<Result> => {
   if (!isStarted) {
     await chrome({
       flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
@@ -26,7 +34,11 @@ export const scrape = async ({ url, expression, timestamp }: { url: string; expr
   await Page.navigate({ url })
   await Page.loadEventFired()
 
-  const result = await Runtime.evaluate({ expression, awaitPromise: true })
+  logger.info('Expression: ', { expression })
+
+  const { result } = await Runtime.evaluate({ expression, awaitPromise: true })
+
+  logger.info('Result: ', { result })
 
   try {
     logger.info('Close the tab')

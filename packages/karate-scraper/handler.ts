@@ -1,16 +1,17 @@
 import { Handler } from 'aws-lambda'
+import { mapSeries } from 'bluebird'
 import { createExpression } from './expressions'
 import logger from './lib/logger'
 import * as scraper from './lib/scraper'
 import * as task from './lib/task'
 import { createResponse } from './lib/utils'
 
-const getQueriesFromStream = evt => {
-  const records = evt.Records.filter(r => r.eventName === 'INSERT')
+const getQueriesFromStream = (evt: any) => {
+  const records = evt.Records.filter((r: any) => r.eventName === 'INSERT')
 
   if (!records.length) return null;
 
-  const images = records.map(record => record.dynamodb.NewImage)
+  const images = records.map((r: any) => r.dynamodb.NewImage)
 
   const queries = images.map(img => ({
     url: img.url.S,
@@ -33,7 +34,7 @@ export const scrape: Handler = async (evt, ctx, cb) => {
       throw new Error('Empty query list')
     }
 
-    const data = await Promise.all(queries.map(q => scraper.scrape(q)))
+    const data = await mapSeries(queries, q => scraper.scrape(q))
 
     logger.info('Data: ', { data })
 
@@ -51,15 +52,15 @@ export const scrape: Handler = async (evt, ctx, cb) => {
 
 export const getResult: Handler = async (evt, ctx, cb) => {
   try {
-    const id = evt.pathParameters!.id!
+    const { id } = evt.pathParameters
 
     if (!id) throw new Error('ID is required')
 
     const { Items } = await task.getLatest(id)
 
-    logger.info('Task item: ', Items)
+    logger.info('Task items: ', Items)
 
-    const response = Items[0].result
+    const response = Items && Items[0] && Items[0].result
       ? createResponse(200, { data: JSON.parse(Items[0].result) })
       : createResponse(202)
 

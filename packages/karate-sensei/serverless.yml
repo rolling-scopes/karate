@@ -1,0 +1,143 @@
+service:
+  name: karate-sensei
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-step-functions
+  - serverless-webpack
+
+custom:
+  webpackIncludeModules: true
+  stage: ${opt:stage, self:provider.stage}
+  prefix: ${self:service}-${self:custom.stage}
+  isVersionFunctions-prod: true
+  isVersionFunctions-default: false
+  waitTimeout: 10
+  topicResults: ${file(./config.yml):TOPIC_RESULTS}
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1
+  stage: test
+  environment:
+    SCRAPER_ENDPOINT: ${file(./config.yml):SCRAPER_ENDPOINT}
+    TOPIC_RESULTS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicResults}
+  versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "states:StartExecution"
+        - "sns:Publish"
+      Resource:
+        - "*"
+
+functions:
+  startScrape:
+    handler: handler.startScrape
+    events:
+      - http:
+          method: post
+          path: scrape/{pageName}
+          cors: true
+    environment:
+      statemachine_arn: ${self:resources.Outputs.Scrape.Value}
+
+  findExpression:
+    handler: handler.findExpression
+
+  addScrapeTask:
+    handler: handler.addScrapeTask
+
+  getResults:
+    handler: handler.getResults
+
+  sentResults:
+    handler: handler.sentResults
+
+stepFunctions:
+  stateMachines:
+    scrape:
+      name: scrape
+      definition:
+        Comment: Scrape
+        StartAt: FindExpression
+        States:
+          FindExpression:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: AddScrapeTask
+          AddScrapeTask:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-addScrapeTask
+            InputPath: $.data
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: WaitScrapeResults
+          WaitScrapeResults:
+            Type: Wait
+            Seconds: ${self:custom.waitTimeout}
+            Next: GetStatus
+          GetStatus:
+            Type: Task
+            InputPath: $.data
+            ResultPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: CheckStatus
+          CheckStatus:
+            Type: Choice
+            Choices:
+              -
+                Variable: $.data.statusCode
+                NumericEquals: 400
+                Next: ScrapeFailed
+              -
+                Variable: $.data.statusCode
+                NumericEquals: 403
+                Next: ScrapeFailed
+              -
+                Variable: $.data.statusCode
+                NumericEquals: 202
+                Next: WaitScrapeResults
+            Default: GetResults
+          ScrapeFailed:
+            Type: Fail
+            Cause: Scrape Failed
+            Error: Scrape returned FAILED
+          GetResults:
+            Type: Task
+            InputPath: $.data
+            ResultPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: SentResults
+          SentResults:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-sentResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            End: true
+
+resources:
+  Outputs:
+    Scrape:
+      Description: The ARN of the state machine
+      Value:
+        Ref: Scrape
