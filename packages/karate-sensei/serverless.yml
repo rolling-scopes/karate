@@ -12,6 +12,8 @@ custom:
   prefix: ${self:service}-${self:custom.stage}
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
+  waitTimeout: 10
+  topicResults: ${file(./config.yml):TOPIC_RESULTS}
 
 provider:
   name: aws
@@ -20,27 +22,29 @@ provider:
   stage: test
   environment:
     SCRAPER_ENDPOINT: ${file(./config.yml):SCRAPER_ENDPOINT}
+    TOPIC_RESULTS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicResults}
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "states:StartExecution"
+        - "sns:Publish"
       Resource:
         - "*"
 
 functions:
-  startCodewarsKatasStart:
-    handler: handler.startCodewarsKatas
+  startScrape:
+    handler: handler.startScrape
     events:
       - http:
           method: post
-          path: codewars/katas
+          path: scrape/{pageName}
           cors: true
     environment:
-      statemachine_arn: ${self:resources.Outputs.CodewarsKatas.Value}
+      statemachine_arn: ${self:resources.Outputs.Scrape.Value}
 
-  findKatasExpression:
-    handler: handler.findKatasExpression
+  findExpression:
+    handler: handler.findExpression
 
   addScrapeTask:
     handler: handler.addScrapeTask
@@ -53,53 +57,87 @@ functions:
 
 stepFunctions:
   stateMachines:
-    codewarsKatas:
-      name: codewarsKatas
+    scrape:
+      name: scrape
       definition:
-        Comment: Scrape Katas Codewars
+        Comment: Scrape
         StartAt: FindExpression
         States:
           FindExpression:
             Type: Task
-            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findKatasExpression
-            Next: ScrapeKatas
-          ScrapeKatas:
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: AddScrapeTask
+          AddScrapeTask:
             Type: Task
-            InputPath: $.data
             Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-addScrapeTask
-            Next: WaitScrapeResults
-          GetResult:
-            Type: Task
             InputPath: $.data
-            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
-            Next: CheckStatus
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: WaitScrapeResults
           WaitScrapeResults:
             Type: Wait
-            Seconds: 10
-            Next: GetResult
+            Seconds: ${self:custom.waitTimeout}
+            Next: GetStatus
+          GetStatus:
+            Type: Task
+            InputPath: $.data
+            ResultPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: CheckStatus
           CheckStatus:
             Type: Choice
             Choices:
               -
-                Variable: $.statusCode
+                Variable: $.data.statusCode
+                NumericEquals: 400
+                Next: ScrapeFailed
+              -
+                Variable: $.data.statusCode
+                NumericEquals: 403
+                Next: ScrapeFailed
+              -
+                Variable: $.data.statusCode
                 NumericEquals: 202
                 Next: WaitScrapeResults
-              -
-                Variable: $.statusCode
-                NumericEquals: 200
-                Next: SentResults
-            Default: DefaultState
+            Default: GetResults
+          ScrapeFailed:
+            Type: Fail
+            Cause: Scrape Failed
+            Error: Scrape returned FAILED
+          GetResults:
+            Type: Task
+            InputPath: $.data
+            ResultPath: $.data
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: SentResults
           SentResults:
             Type: Task
             Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-sentResults
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
             End: true
-          DefaultState:
-            Type: Fail
-            Cause: No Matches
 
 resources:
   Outputs:
-    CodewarsKatas:
+    Scrape:
       Description: The ARN of the state machine
       Value:
-        Ref: CodewarsKatas
+        Ref: Scrape

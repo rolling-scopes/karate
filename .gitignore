@@ -9,3 +9,4 @@ project.yml
 .DS_Store
 config.yml
 lerna-debug.log
+.vscode

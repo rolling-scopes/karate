@@ -3,7 +3,7 @@ import rq from 'request-promise-native'
 
 const SCRAPER_ENDPOINT = process.env.SCRAPER_ENDPOINT;
 
-export const findExpression = (pageName, userName) =>
+export const findExpression = ({ pageName, userName }) =>
   rq({
     method: 'POST',
     uri: `${SCRAPER_ENDPOINT}/expression`,
@@ -32,6 +32,7 @@ export const getResults = async ({ id }) => {
 
   return {
     statusCode,
-    data: body
+    id,
+    ...body
   }
 }

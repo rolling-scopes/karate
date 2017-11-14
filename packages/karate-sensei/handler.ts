@@ -1,59 +1,75 @@
-import { StepFunctions } from 'aws-sdk'
+import { StepFunctions, SNS } from 'aws-sdk'
 import * as api from './lib/api'
 import { createResponse } from './lib/utils'
 
 const stepfunctions = new StepFunctions();
+const sns = new SNS();
 
-export const startCodewarsKatas = async (evt, ctx, cb) => {
+export const startScrape = async (evt: any, ctx: any, cb: any) => {
   try {
+    const { pageName } = evt.pathParameters
     const { users } = JSON.parse(evt.body)
 
-    const stateMachineArn = process.env.statemachine_arn
+    if(!Array.isArray(users) || users.length < 0) throw new Error('Users list is required')
+
+    const stateMachineArn = String(process.env.statemachine_arn)
 
     await Promise.all(
-      users.map(user => stepfunctions.startExecution({
+      users.map((userName: string) => stepfunctions.startExecution({
         stateMachineArn,
-        input: JSON.stringify({ user })
+        input: JSON.stringify({ pageName, userName })
       }).promise())
     )
-    cb(null, createResponse(200, { message: 'started'}))
+    cb(null, createResponse(200, { message: 'started' }))
   } catch (e) {
+    console.log(e);
     cb(null, createResponse(400, { message: e.message }))
   }
 }
 
-export const findKatasExpression = async (evt, ctx, cb) => {
-  try {
-    const data = await api.findExpression('katas', evt);
-    cb(null, { data });
-  } catch (e) {
-    cb(e)
-  }
-}
-
-export const addScrapeTask = async (evt, ctx, cb) => {
-  try {
-    const data = await api.addScrapeTask(evt)
-    cb(null, { data });
-  } catch (e) {
-    cb(e)
-  }
-}
-
-export const getResults = async (evt, ctx, cb) => {
-  try {
-    const { statusCode, data } = await api.getResults(evt)
-    cb(null, { statusCode, data });
-  } catch (e) {
-    cb(e)
-  }
-}
-
-export const sentResults = async (evt, ctx, cb) => {
+export const findExpression = async (evt: any, ctx: any, cb: any) => {
   try {
     console.log(evt);
+    const data = await api.findExpression(evt);
+    cb(null, { ...data });
+  } catch (e) {
+    console.log(e);
+    cb(e)
+  }
+}
+
+export const addScrapeTask = async (evt: any, ctx: any, cb: any) => {
+  try {
+    console.log(evt);
+    const data = await api.addScrapeTask(evt)
+    cb(null, { ...data });
+  } catch (e) {
+    console.log(e);
+    cb(e)
+  }
+}
+
+export const getResults = async (evt: any, ctx: any, cb: any) => {
+  try {
+    console.log(evt);
+    const data = await api.getResults(evt)
+    cb(null, { ...data });
+  } catch (e) {
+    console.log(e);
+    cb(e)
+  }
+}
+
+export const sentResults = async (evt: any, ctx: any, cb: any) => {
+  try {
+    console.log(evt);
+    await sns.publish({
+      TopicArn: `${process.env.TOPIC_RESULTS}-${evt.pageName}`,
+      Message: JSON.stringify(evt)
+    }).promise()
     cb(null);
   } catch (e) {
+    console.log(e);
     cb(e)
   }
 }
