@@ -2,17 +2,24 @@ const CODEWARS = 'https://www.codewars.com'
 
 const SELECTORS = {
   solvedKatasSelector: '.list-item.kata .item-title a',
+  solvedKatasRankSelector: '.is-extra-wide.mrm .inner-small-hex.is-extra-wide span'
 }
 export interface KatasSelector {
-  solvedKatasSelector: string
+  solvedKatasSelector: string;
+  solvedKatasRankSelector: string;
 }
 
-const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
+const createKatasExpression = ({ solvedKatasSelector, solvedKatasRankSelector }: KatasSelector) =>
   `const d = async () => {
     const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
     const grabKatas = solvedKataSelector =>
       [...document.querySelectorAll(solvedKataSelector)]
+        .map(el => el.innerHTML)
+        .map(text => text.toLowerCase().trim());
+
+    const grabRanks = solvedKatasRankSelector =>
+      [...document.querySelectorAll(solvedKatasRankSelector)]
         .map(el => el.innerHTML)
         .map(text => text.toLowerCase().trim());
 
@@ -40,7 +47,17 @@ const createKatasExpression = ({ solvedKatasSelector }: KatasSelector) =>
 
     await waitUntilMultiplyIsReady();
 
-    return grabKatas('.list-item.kata .item-title a');
+    const katas = {
+      names: grabKatas('.list-item.kata .item-title a'),
+      ranks: grabRanks('.is-extra-wide.mrm .inner-small-hex.is-extra-wide span')
+    };
+
+    const result = [];
+    for(let i = 0; i < katas.names.length; i++) {
+      result.push({name: katas.names[i], rank: katas.ranks[i]});
+    }
+
+    return {katas: result};
   };
   d().then(res => JSON.stringify(res))
   `
