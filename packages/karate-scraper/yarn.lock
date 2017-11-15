@@ -12,6 +12,10 @@
   version "0.0.21"
   resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-0.0.21.tgz#22cc1c92b144d39808c9cce10534d1c13bbcf4da"
 
+"@types/bluebird@^3.5.18":
+  version "3.5.18"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.18.tgz#6a60435d4663e290f3709898a4f75014f279c4d6"
+
 "@types/node@*":
   version "8.0.47"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.47.tgz#968e596f91acd59069054558a00708c445ca30c2"

@@ -13,11 +13,13 @@ const getQueriesFromStream = (evt: any) => {
 
   const images = records.map((r: any) => r.dynamodb.NewImage)
 
-  const queries = images.map(img => ({
-    url: img.url.S,
-    expression: img.expression.S,
-    timestamp: img.timestamp.N
-  }));
+  const queries = images
+    .map(img => ({
+      url: img.url.S,
+      expression: img.expression.S,
+      timestamp: img.timestamp.N
+    }))
+    .filter(d => d.url !== 'empty'); // TODO: Validate properly
 
   return queries
 }
@@ -34,7 +36,7 @@ export const scrape: Handler = async (evt, ctx, cb) => {
       throw new Error('Empty query list')
     }
 
-    const data = await mapSeries(queries, q => scraper.scrape(q))
+    const data = await mapSeries(queries, q => scraper.scrape(q).catch(logger.error))
 
     logger.info('Data: ', { data })
 
@@ -46,7 +48,7 @@ export const scrape: Handler = async (evt, ctx, cb) => {
     cb(null)
   } catch (e) {
     logger.error(e)
-    cb(null) // disable retry policy
+    cb(null)
   }
 }
 
