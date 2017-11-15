@@ -1,5 +1,8 @@
 import * as scraper from '../../lib/scraper'
-import { expression as profileExpression, url as profileAddr } from '../duolingo/profile'
+import {
+  expression as profileExpression,
+  url as profileAddr,
+} from '../duolingo/profile'
 
 test('Scrape duolingo', async () => {
   const url = profileAddr({ userName: 'siarheimel' })

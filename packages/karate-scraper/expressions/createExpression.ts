@@ -1,7 +1,7 @@
 import * as katas from './codewars/katas'
 import * as profile from './duolingo/profile'
 
-export default (pageName, meta) => {
+export default (pageName: string, meta: any) => {
   switch (pageName) {
     case 'katas':
       return {

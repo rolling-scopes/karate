@@ -13,3 +13,4 @@ client_secret.json
 key.pem
 secure.p12
 .idea
+.vscode

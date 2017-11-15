@@ -1,0 +1,21 @@
+{
+  "name": "karate-sensei",
+  "version": "0.0.1",
+  "scripts": {
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "package": "sls package"
+  },
+  "author": "siarhei.m.a@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^0.0.21",
+    "@types/winston": "^2.3.7",
+    "aws-sdk": "^2.149.0"
+  }
+}

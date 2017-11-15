@@ -1,22 +1,31 @@
 import * as chrome from '@serverless-chrome/lambda'
 import * as CDP from 'chrome-remote-interface'
+import logger from './logger';
 
 export interface Result {
-  result: { value: string }
+  url: string;
+  expression: string;
+  timestamp: number;
+  value: string | null;
 }
-export interface Scrape {
-  (query: { url: string; expression: string }): Promise<Result>
+interface ScrapeQuery {
+  url: string;
+  expression: string;
+  timestamp: number;
 }
+let isStarted = false;
 
-const CHROME_OPTIONS = {
-  flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
-}
-
-export const scrape: Scrape = async ({ url, expression }) => {
-  await chrome(CHROME_OPTIONS)
+export const scrape = async ({ url, expression, timestamp }: ScrapeQuery): Promise<Result> => {
+  if (!isStarted) {
+    await chrome({
+      flags: ['--window-size=1280x1696', '--ignore-certificate-errors'],
+    })
+    isStarted = true
+  }
 
   const target = await CDP.New()
-  const client = await CDP({ target })
+
+  const client = await CDP({ host: '127.0.0.1', target })
 
   const { Page, Runtime } = client
 
@@ -25,10 +34,25 @@ export const scrape: Scrape = async ({ url, expression }) => {
   await Page.navigate({ url })
   await Page.loadEventFired()
 
-  const result = await Runtime.evaluate({ expression, awaitPromise: true })
+  logger.info('Expression: ', { expression })
 
-  const { id } = client.target
-  await CDP.Close({ id })
+  const { result } = await Runtime.evaluate({ expression, awaitPromise: true })
 
-  return result
+  logger.info('Result: ', { result })
+
+  try {
+    logger.info('Close the tab')
+    await CDP.Close({ id: target.id })
+  } catch (e) {
+    logger.error(e)
+  }
+
+  await client.close()
+
+  return {
+    url,
+    expression,
+    timestamp,
+    value: result.value || null,
+  }
 }
