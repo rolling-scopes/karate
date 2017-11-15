@@ -57,7 +57,7 @@ const createKatasExpression = ({ solvedKatasSelector, solvedKatasRankSelector }:
       result.push({name: katas.names[i], rank: katas.ranks[i]});
     }
 
-    return {katas: result};
+    return result;
   };
   d().then(res => JSON.stringify(res))
   `

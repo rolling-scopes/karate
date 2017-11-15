@@ -14,9 +14,6 @@ export default (pageName: string, meta: any) => {
         expression: profile.expression(),
       }
     default:
-      return {
-        url: 'empty',
-        expression: 'empty',
-      }
+      throw new Error('Page not found')
   }
 }
