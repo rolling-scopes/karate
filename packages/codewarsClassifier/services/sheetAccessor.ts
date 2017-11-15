@@ -26,7 +26,7 @@ export function getCodewarsNicknames () {
   })
 }
 
-function getCodewarsNicknamesFromSheet() {
+function getCodewarsNicknamesFromSheet () {
   return new Promise((resolve, reject) => {
     sheets && sheets.spreadsheets.values.get({
       spreadsheetId: process.env.CODEWARS_ACCOUNTS_SHEET,

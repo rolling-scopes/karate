@@ -3,8 +3,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const BabiliPlugin = require('babili-webpack-plugin');
 const slsw = require('serverless-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: slsw.lib.entries,
@@ -35,6 +35,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
+    new CopyWebpackPlugin([
+        { from: './key.pem', to: '.' },
     // new BabiliPlugin(),
+    ])
   ]
 };

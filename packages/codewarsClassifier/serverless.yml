@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: codewarsClassifier
+service: karate-classifier
 
 plugins:
   - serverless-pseudo-parameters
@@ -24,6 +24,9 @@ provider:
   runtime: nodejs6.10
   stage: test
   region: eu-west-1
+  environment:
+    CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
+    SCORE_SHEET: ${env:SCORE_SHEET}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -57,6 +60,8 @@ provider:
 #  exclude:
 #    - exclude-me.js
 #    - exclude-me-dir/**
+custom:
+  webpackIncludeModules: true
 
 functions:
   evaluate:

@@ -33,9 +33,9 @@ export const getStudentsCodewarsNickNames = async (evt, ctx, cb) => {
   getCodewarsNicknames()
     .then(data => {
       response.body.students = data
-      cb(null, createResponse(200, response.body));
+      cb(null, createResponse(200, response.body))
     }).catch(err => {
-      response.body.message = err
+      response.body.message = err.message || err
       cb(null, createResponse(400, response.body))
     })
 }
