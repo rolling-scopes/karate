@@ -37,7 +37,7 @@ const createKatasExpression = ({ solvedKatasSelector, solvedKatasRankSelector }:
       let currentHeight = 0;
       const now = Date.now();
 
-      while (previousHeight !== currentHeight ||  Date.now() - now > 230000) {
+      while (previousHeight !== currentHeight || Date.now() - now > 230000) {
         previousHeight = currentHeight;
         currentHeight = getPageHeight();
         window.scrollTo(0, currentHeight);
