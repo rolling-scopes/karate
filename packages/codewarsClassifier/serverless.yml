@@ -1,16 +1,3 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
 service: karate-classifier
 
 plugins:
@@ -71,6 +58,7 @@ functions:
           method: post
           path: evaluate
           cors: true
+      - sns: arn:aws:sns:eu-west-1:550997613790:karate-results-katas
   students:
     handler: handler.getStudentsCodewarsNickNames
     events:

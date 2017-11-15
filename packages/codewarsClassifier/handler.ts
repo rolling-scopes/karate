@@ -9,17 +9,17 @@ export const createResponse = (statusCode, body?) => ({
 })
 
 export const evaluate = async (evt, ctx, cb) => {
-  const { userName, katas } = JSON.parse(evt.body)
+  const { userName, data, pageName } = JSON.parse(evt.body || evt.Records[0].Sns.Message)
   const response: any = {
     body: {
       userName,
       message: ''
     }
   }
-  writeToSheet(userName, classify(katas))
+  writeToSheet(userName, classify(data.data))
     .then(data => {
       response.body.message = data
-      cb(null, createResponse(200, response.body));
+      cb(null, createResponse(200, response.body))
     }).catch(err => {
       response.body.message = err
       cb(null, createResponse(400, response.body))
