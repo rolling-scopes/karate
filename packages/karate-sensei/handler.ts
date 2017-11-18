@@ -11,9 +11,13 @@ export const startScrape = async (evt: any, ctx: any, cb: any) => {
     const { pageName } = evt.pathParameters
     const { users } = JSON.parse(evt.body)
 
+
     if(!Array.isArray(users) || users.length < 0) throw new Error('Users list is required')
 
     const stateMachineArn = String(process.env.statemachine_arn)
+
+    console.log(`page name ${pageName} and users ${users}`)
+
 
     await BPromise.map(
       users,
