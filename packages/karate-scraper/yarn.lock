@@ -2,15 +2,11 @@
 # yarn lockfile v1
 
 
-"@serverless-chrome/lambda@^1.0.0-7":
-  version "1.0.0-7"
-  resolved "https://registry.yarnpkg.com/@serverless-chrome/lambda/-/lambda-1.0.0-7.tgz#81e47d9d96773a13b0f35e1b12b35fb04407c1b0"
+"@serverless-chrome/lambda@^1.0.0-28":
+  version "1.0.0-28"
+  resolved "https://registry.yarnpkg.com/@serverless-chrome/lambda/-/lambda-1.0.0-28.tgz#846cb221fc9f2c22bbe6e2f4a51fb6876641a2ca"
   dependencies:
     extract-zip "1.6.6"
-
-"@types/aws-lambda@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-0.0.21.tgz#22cc1c92b144d39808c9cce10534d1c13bbcf4da"
 
 "@types/bluebird@^3.5.18":
   version "3.5.18"
@@ -34,9 +30,9 @@ async@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async/-/async-1.0.0.tgz#f8fc04ca3a13784ade9e1641af98578cfbd647a9"
 
-aws-sdk@^2.149.0:
-  version "2.149.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.149.0.tgz#76f53722a7780bdb3191e83f27c10108c6fe9813"
+aws-sdk@^2.153.0:
+  version "2.153.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.153.0.tgz#6ba22e849aee16ad707718a18c64b756d8f1e81a"
   dependencies:
     buffer "4.9.1"
     crypto-browserify "1.0.9"
@@ -65,6 +61,10 @@ buffer@4.9.1:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
+charenc@~0.0.1:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
+
 chrome-remote-interface@^0.25.3:
   version "0.25.3"
   resolved "https://registry.yarnpkg.com/chrome-remote-interface/-/chrome-remote-interface-0.25.3.tgz#b692ae538cd5af3a6dd285636bfab3d29a7006c1"
@@ -91,6 +91,10 @@ concat-stream@1.6.0:
 core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+crypt@~0.0.1:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
 
 crypto-browserify@1.0.9:
   version "1.0.9"
@@ -137,6 +141,10 @@ inherits@^2.0.3, inherits@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
 
+is-buffer@~1.1.1:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
+
 isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
@@ -149,9 +157,17 @@ jmespath@0.15.0:
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
 
-lodash@^4.0.0:
+lodash@^4.0.0, lodash@^4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
+
+md5@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/md5/-/md5-2.2.1.tgz#53ab38d5fe3c8891ba465329ea23fac0540126f9"
+  dependencies:
+    charenc "~0.0.1"
+    crypt "~0.0.1"
+    is-buffer "~1.1.1"
 
 minimist@0.0.8:
   version "0.0.8"
@@ -206,6 +222,23 @@ sax@1.2.1:
 sax@>=0.6.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
+
+semver-compare@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
+
+serverless-dynamodb-autoscaling@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/serverless-dynamodb-autoscaling/-/serverless-dynamodb-autoscaling-0.6.2.tgz#94306131d59d4943f1baff7f87a65a6f6e890d76"
+  dependencies:
+    lodash "^4.17.4"
+    md5 "^2.2.1"
+
+serverless-dynamodb-ttl@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/serverless-dynamodb-ttl/-/serverless-dynamodb-ttl-0.1.1.tgz#e913a84502f2caedec2c8a5f431778eb7eaf95de"
+  dependencies:
+    semver-compare "^1.0.0"
 
 stack-trace@0.0.x:
   version "0.0.10"
