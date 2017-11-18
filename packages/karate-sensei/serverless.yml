@@ -12,7 +12,7 @@ custom:
   prefix: ${self:service}-${self:custom.stage}
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
-  waitTimeout: 10
+  waitTimeout: 60
   topicResults: ${file(./config.yml):TOPIC_RESULTS}
 
 provider:
@@ -35,6 +35,8 @@ provider:
 functions:
   startScrape:
     handler: handler.startScrape
+    timeout: 300
+    memorySize: 1024
     events:
       - http:
           method: post
@@ -45,6 +47,9 @@ functions:
 
   findExpression:
     handler: handler.findExpression
+
+  checkAddress:
+    handler: handler.checkAddress
 
   addScrapeTask:
     handler: handler.addScrapeTask
@@ -66,6 +71,16 @@ stepFunctions:
           FindExpression:
             Type: Task
             Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: ScrapeFailed
+            Next: CheckAddress
+          CheckAddress:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-checkAddress
+            InputPath: $.data
             ResultPath: $.data
             Catch:
               - ErrorEquals:

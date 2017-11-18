@@ -14,6 +14,11 @@ export const findExpression = ({ pageName, userName }) =>
     json: true
   });
 
+export const checkAddress = ({ url }) =>
+  rq({
+    uri: url
+  })
+
 export const addScrapeTask = ({ url, expression }) =>
   rq({
     method: 'POST',
