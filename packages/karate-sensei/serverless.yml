@@ -127,10 +127,6 @@ stepFunctions:
                 NumericEquals: 202
                 Next: WaitScrapeResults
             Default: GetResults
-          ScrapeFailed:
-            Type: Fail
-            Cause: Scrape Failed
-            Error: Scrape returned FAILED
           GetResults:
             Type: Task
             InputPath: $.data
@@ -149,6 +145,10 @@ stepFunctions:
                   - States.ALL
                 Next: ScrapeFailed
             End: true
+          ScrapeFailed:
+            Type: Fail
+            Cause: Scrape Failed
+            Error: Scrape returned FAILED
 
 resources:
   Outputs:
