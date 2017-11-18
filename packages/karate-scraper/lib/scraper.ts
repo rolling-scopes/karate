@@ -27,7 +27,25 @@ export const scrape = async ({ url, expression, timestamp }: ScrapeQuery): Promi
 
   const client = await CDP({ host: '127.0.0.1', target })
 
-  const { Page, Runtime } = client
+  const { Page, Runtime, Emulation } = client
+
+  const width = 2000
+  const height = 2000
+
+  await Emulation.setDeviceMetricsOverride({
+    width,
+    height,
+    mobile: true,
+    deviceScaleFactor: 1,
+    fitWindow: false,
+    screenWidth: width,
+    screenHeight: height
+  });
+
+  await Emulation.setVisibleSize({
+    width,
+    height
+  });
 
   await Promise.all([Page.enable(), Runtime.enable()])
 

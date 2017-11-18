@@ -1,4 +1,3 @@
-import { Handler } from 'aws-lambda'
 import { mapSeries } from 'bluebird'
 import { createExpression } from './expressions'
 import logger from './lib/logger'
@@ -24,7 +23,7 @@ const getQueriesFromStream = (evt: any) => {
   return queries
 }
 
-export const scrape: Handler = async (evt, ctx, cb) => {
+export const scrape = async (evt, ctx, cb) => {
   try {
     logger.info('DynamoDB Stream Object: ', JSON.stringify(evt))
 
@@ -52,7 +51,7 @@ export const scrape: Handler = async (evt, ctx, cb) => {
   }
 }
 
-export const getResult: Handler = async (evt, ctx, cb) => {
+export const getResult = async (evt, ctx, cb) => {
   try {
     const { id } = evt.pathParameters
 
@@ -69,11 +68,11 @@ export const getResult: Handler = async (evt, ctx, cb) => {
     cb(null, response)
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }
 
-export const addTask: Handler = async (evt, ctx, cb) => {
+export const addTask = async (evt, ctx, cb) => {
   try {
     const { url, expression } = JSON.parse(evt.body)
 
@@ -88,11 +87,11 @@ export const addTask: Handler = async (evt, ctx, cb) => {
     cb(null, createResponse(202, { id: task_id }))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }
 
-export const findExpression: Handler = async (evt, ctx, cb) => {
+export const findExpression = async (evt, ctx, cb) => {
   try {
     const { pageName, meta } = JSON.parse(evt.body)
 
@@ -107,6 +106,6 @@ export const findExpression: Handler = async (evt, ctx, cb) => {
     cb(null, createResponse(200, expression))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }
