@@ -1,5 +1,5 @@
 import { mapSeries } from 'bluebird'
-import { createExpression } from './expressions'
+import { createExpression } from './lib/expressions'
 import logger from './lib/logger'
 import * as scraper from './lib/scraper'
 import * as task from './lib/task'
