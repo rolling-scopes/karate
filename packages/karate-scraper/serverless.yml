@@ -1,6 +1,5 @@
 service:
   name: karate-scraper
-
 plugins:
   - serverless-pseudo-parameters
   - serverless-webpack
@@ -8,15 +7,15 @@ plugins:
   - serverless-offline
 
 custom:
-  start:
-    seed: true
-    inMemory: true
   webpackIncludeModules: true
-  prefix: ${self:custom.stage}-${self:service}
+  prefix: ${self:service}-${self:custom.stage}
   stage: ${opt:stage, self:provider.stage}
   task_table: ${self:custom.prefix}-task
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
+  start:
+    seed: true
+    inMemory: true
 
 provider:
   name: aws
@@ -28,12 +27,11 @@ provider:
     - Effect: Allow
       Action:
       - dynamodb:*
-      Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/*
+      Resource: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}
   environment:
     region: ${self:provider.region}
     stage: ${self:custom.stage}
     task_table: ${self:custom.task_table}
-    LOGGING: true
 
 functions:
   scrape:
@@ -41,7 +39,7 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
-      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/test-karate-scraper-task/stream/2017-11-06T09:42:05.157
+      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/2017-11-18T13:14:56.306
 
   addTask:
     handler: handler.addTask
@@ -72,7 +70,7 @@ resources:
     TaskTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.task_table}
+        TableName: ${self:custom.task_table}
         KeySchema:
           -
             AttributeName: task_id
@@ -88,7 +86,10 @@ resources:
             AttributeName: timestamp
             AttributeType: N
         ProvisionedThroughput:
-          ReadCapacityUnits: 7
-          WriteCapacityUnits: 7
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         StreamSpecification:
           StreamViewType: NEW_IMAGE
+        TimeToLiveSpecification:
+          AttributeName: timestamp
+          Enabled: true

@@ -11,14 +11,14 @@
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "@serverless-chrome/lambda": "^1.0.0-7",
+    "@serverless-chrome/lambda": "^1.0.0-28",
+    "bluebird": "^3.5.1",
     "chrome-remote-interface": "^0.25.3",
-    "winston": "^2.3.1",
-    "bluebird": "^3.5.1"
+    "winston": "^2.3.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.149.0",
-    "@types/aws-lambda": "^0.0.21",
-    "@types/winston": "^2.3.7"
+    "@types/bluebird": "^3.5.18",
+    "@types/winston": "^2.3.7",
+    "aws-sdk": "^2.153.0"
   }
 }

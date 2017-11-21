@@ -1,6 +1,5 @@
-import { Handler } from 'aws-lambda'
 import { mapSeries } from 'bluebird'
-import { createExpression } from './expressions'
+import { createExpression } from './lib/expressions'
 import logger from './lib/logger'
 import * as scraper from './lib/scraper'
 import * as task from './lib/task'
@@ -13,16 +12,18 @@ const getQueriesFromStream = (evt: any) => {
 
   const images = records.map((r: any) => r.dynamodb.NewImage)
 
-  const queries = images.map(img => ({
-    url: img.url.S,
-    expression: img.expression.S,
-    timestamp: img.timestamp.N
-  }));
+  const queries = images
+    .map(img => ({
+      url: img.url.S,
+      expression: img.expression.S,
+      timestamp: img.timestamp.N
+    }))
+    .filter(d => d.url !== 'empty'); // TODO: Validate properly
 
   return queries
 }
 
-export const scrape: Handler = async (evt, ctx, cb) => {
+export const scrape = async (evt, ctx, cb) => {
   try {
     logger.info('DynamoDB Stream Object: ', JSON.stringify(evt))
 
@@ -34,7 +35,7 @@ export const scrape: Handler = async (evt, ctx, cb) => {
       throw new Error('Empty query list')
     }
 
-    const data = await mapSeries(queries, q => scraper.scrape(q))
+    const data = await mapSeries(queries, q => scraper.scrape(q).catch(logger.error))
 
     logger.info('Data: ', { data })
 
@@ -46,11 +47,11 @@ export const scrape: Handler = async (evt, ctx, cb) => {
     cb(null)
   } catch (e) {
     logger.error(e)
-    cb(null) // disable retry policy
+    cb(null)
   }
 }
 
-export const getResult: Handler = async (evt, ctx, cb) => {
+export const getResult = async (evt, ctx, cb) => {
   try {
     const { id } = evt.pathParameters
 
@@ -67,11 +68,11 @@ export const getResult: Handler = async (evt, ctx, cb) => {
     cb(null, response)
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }
 
-export const addTask: Handler = async (evt, ctx, cb) => {
+export const addTask = async (evt, ctx, cb) => {
   try {
     const { url, expression } = JSON.parse(evt.body)
 
@@ -86,11 +87,11 @@ export const addTask: Handler = async (evt, ctx, cb) => {
     cb(null, createResponse(202, { id: task_id }))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }
 
-export const findExpression: Handler = async (evt, ctx, cb) => {
+export const findExpression = async (evt, ctx, cb) => {
   try {
     const { pageName, meta } = JSON.parse(evt.body)
 
@@ -105,6 +106,6 @@ export const findExpression: Handler = async (evt, ctx, cb) => {
     cb(null, createResponse(200, expression))
   } catch (e) {
     logger.error(e)
-    cb(null, createResponse(400, { err: e.message }))
+    cb(createResponse(400, { err: e.message }))
   }
 }

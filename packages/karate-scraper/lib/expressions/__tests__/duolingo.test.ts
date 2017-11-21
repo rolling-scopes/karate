@@ -1,4 +1,4 @@
-import * as scraper from '../../lib/scraper'
+import * as scraper from '../../scraper'
 import {
   expression as profileExpression,
   url as profileAddr,
