@@ -4,7 +4,7 @@ import { getJwtClient } from './gapiClient'
 const RANGES = {
   CODEWARS_TO_USERNAME: 'Sheet1!A1:D',
   SCORES_USERNAMES: 'Sheet1!B1:B',
-  CODEWARS_SCORES: 'Sheet1!X'
+  CODEWARS_SCORES: 'Sheet1!AA'
 }
 
 let sheets = null

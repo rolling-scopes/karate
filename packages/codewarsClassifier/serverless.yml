@@ -59,13 +59,15 @@ functions:
           path: evaluate
           cors: true
       - sns: arn:aws:sns:eu-west-1:550997613790:karate-results-katas
-  students:
-    handler: handler.getStudentsCodewarsNickNames
+
+  startCodewarsEvaluation:
+    handler: handler.startCodewarsEvaluation
     events:
       - http:
-          method: get
-          path: students
+          method: post
+          path: start_codewars_evaluation
           cors: true
+      - schedule: rate(1 hour)
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

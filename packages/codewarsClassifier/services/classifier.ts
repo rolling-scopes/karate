@@ -1,4 +1,4 @@
-import { marksMapping } from '../marks'
+import { marksMapping, targetKatas } from '../marks'
 
 const getMarkByRank = (rank) => {
   return marksMapping[rank]
@@ -6,6 +6,8 @@ const getMarkByRank = (rank) => {
 
 export const classify = (katas) => {
   let result = 0
-  katas.forEach(k => result += getMarkByRank(k.rank))
+  katas.forEach(k => {
+      if (targetKatas.indexOf(result) > -1) result += getMarkByRank(k.rank)
+  })
   return result
 }
