@@ -14,6 +14,8 @@ provider:
   environment:
     CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
     SCORE_SHEET: ${env:SCORE_SHEET}
+  memorySize: 512
+  timeout: 300
 
 # you can overwrite defaults here
 #  stage: dev
@@ -67,7 +69,7 @@ functions:
           method: post
           path: start_codewars_evaluation
           cors: true
-      - schedule: rate(1 hour)
+      - schedule: rate(1 day)
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

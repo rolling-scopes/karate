@@ -35,7 +35,7 @@ function findTargetUser (userName) {
       range: RANGES.CODEWARS_TO_USERNAME
     }, (err, response) => {
       if (err) reject(err)
-      const values = response.values
+      const values = response && response.values
 
       let targetRowIndex = values && values.findIndex(v => v[3] === userName)
       if (targetRowIndex > -1) {
@@ -53,7 +53,7 @@ function findUserScoreRow (user) {
       range: RANGES.SCORES_USERNAMES
     }, (err, response) => {
       if (err) reject(err)
-      const values = response.values
+      const values = response && response.values
       let targetRowIndex = values && values.findIndex(v => v[0] === user)
       if (targetRowIndex) {
         resolve(++targetRowIndex)

@@ -3,6 +3,7 @@ import { writeToSheet } from './services/sheetWriter'
 import { getCodewarsNicknames } from './services/sheetAccessor'
 import 'request'
 import rq from 'request-promise-native'
+import logger from './lib/logger'
 
 export const createResponse = (statusCode, body?) => ({
   statusCode,
@@ -12,7 +13,7 @@ export const createResponse = (statusCode, body?) => ({
 
 export const evaluate = async (evt, ctx, cb) => {
   const { userName, data, pageName } = JSON.parse(evt.body || evt.Records[0].Sns.Message)
-  console.log({ userName, data, pageName })
+  logger.info('userdata', JSON.stringify({ userName, data, pageName }))
   const response: any = {
     body: {
       userName,
@@ -31,22 +32,26 @@ export const evaluate = async (evt, ctx, cb) => {
 
 export const startCodewarsEvaluation = async (evt, ctx, cb) => {
   const response: any = {
-    body: {}
+    body: {
+      message: ''
+    }
   }
   getCodewarsNicknames()
-    .then(data =>
-      rq({
+    .then(data => {
+      logger.info(data)
+      return rq({
         method: 'POST',
-        uri: `https://sscrafuaa9.execute-api.eu-west-1.amazonaws.com/test/scrape/katas`,
+        uri: `https://i3m0xs5h0e.execute-api.eu-west-1.amazonaws.com/test/scrape/katas`,
         body: {
           "users": data
         },
         json: true
       })
-    ).then(data => {
+    }).then(data => {
       response.body.message = 'success'
       cb(null, createResponse(200, response.body))
   }).catch(err => {
+      logger.error(err);
       response.body.message = err.message || err
       cb(null, createResponse(400, response.body))
     })

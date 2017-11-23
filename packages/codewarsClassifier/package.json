@@ -20,7 +20,8 @@
     "google-auth-library": "^0.11.0",
     "googleapis": "^22.2.0",
     "request": "^2.83.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.142.0",

@@ -4,11 +4,13 @@ export const marksMapping = {
     '6 kyu': 4,
     '5 kyu': 5,
     '4 kyu': 10,
+    '3 kuy': 15,
+    '1 kuy': 20
 }
 
 export const targetKatas = [
   "Opposite number",
-  "Basic Mathematica Operations",
+  "Basic Mathematical Operations",
   "Printing Array elements with Comma delimiters",
   "Transportation on vacation",
   "Get the Middle Character",
@@ -38,5 +40,9 @@ export const targetKatas = [
   "Replicate `new`",
   "Sum of Digits / Digital Root",
   "Fun with ES6 Classes #2 - Animals and Inheritance Fun with ES6",
-  "Classes #3 - Cuboids, Cubes and Getters"
+  "Classes #3 - Cuboids, Cubes and Getters",
+  "Lazy evaluation",
+  "Tail recursion with trampoline",
+  "Functional SQL",
+  "Can you get the loop?"
 ]
