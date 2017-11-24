@@ -5,7 +5,7 @@ const google = require('googleapis')
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-export function getJwtClient () {
+export function getJwtClient (): any {
   return new google.auth.JWT(
     key.client_email,
     path.join(__dirname, './key.pem'),
@@ -13,4 +13,11 @@ export function getJwtClient () {
     SCOPES,
     null
   )
+}
+
+export function initSheetsClient(client: any): any {
+  return google.sheets({
+    version: 'v4',
+    auth: client
+  })
 }

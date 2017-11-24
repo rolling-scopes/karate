@@ -14,6 +14,7 @@ provider:
   environment:
     CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
     SCORE_SHEET: ${env:SCORE_SHEET}
+    SENSEI_URL: ${env:SENSEI_URL}
   memorySize: 512
   timeout: 300
 

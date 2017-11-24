@@ -1,29 +1,21 @@
 import logger from "../lib/logger";
 
 const google = require('googleapis')
-import { getJwtClient } from './gapiClient'
+import { getJwtClient, initSheetsClient } from './gapiClient'
+import { checkURL} from "./helpers";
+import { RANGES } from './config';
 
-const RANGES = {
-  CODEWARS: 'Sheet1!D2:D',
-}
-
-const CODEWARS_URL_START = 'https://www.codewars.com/users/';
-const CODEWARS_USERNAME_POSITION = 4;
-
-let sheets = null
+let sheets: any = null
 
 export function getCodewarsNicknames () {
   return new Promise((resolve, reject) => {
     const jwtClient = getJwtClient()
-    jwtClient.authorize(async (err, tokens) => {
+    jwtClient.authorize(async (err: any, tokens) => {
       if (err) reject(err)
-      sheets = google.sheets({
-        version: 'v4',
-        auth: jwtClient
-      })
+      sheets = initSheetsClient(jwtClient)
       try {
         const data: any = await getCodewarsNicknamesFromSheet()
-        resolve(data.map(v => checkURL(v)));
+        resolve(data.map((v: string) => checkURL(v)));
       } catch (err) {
         logger.error(err)
         reject(err)
@@ -32,26 +24,18 @@ export function getCodewarsNicknames () {
   })
 }
 
-function checkURL(maybeUrl: string) {
-  if(maybeUrl && maybeUrl.indexOf(CODEWARS_URL_START) > -1) {
-    return maybeUrl.split('/')[CODEWARS_USERNAME_POSITION];
-  } else {
-    return maybeUrl;
-  }
-}
-
 function getCodewarsNicknamesFromSheet () {
   return new Promise((resolve, reject) => {
     sheets && sheets.spreadsheets.values.get({
       spreadsheetId: process.env.CODEWARS_ACCOUNTS_SHEET,
       range: RANGES.CODEWARS
-    }, (err, response) => {
+    }, (err: any, response: any) => {
       if (err) {
         logger.error(err)
         reject(err)
       }
       if (response && response.values) {
-        resolve(response.values.map(s => s[0]).filter(s => !!s))
+        resolve(response.values.map((s: string) => s[0]).filter((s: string) => !!s))
       } else {
         reject('no users found')
       }

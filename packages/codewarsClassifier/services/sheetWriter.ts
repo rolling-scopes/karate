@@ -1,24 +1,16 @@
-const google = require('googleapis')
-import { getJwtClient } from './gapiClient'
+import { getJwtClient, initSheetsClient } from './gapiClient'
+import { RANGES } from './config'
+import { checkURL } from "./helpers";
 
-const RANGES = {
-  CODEWARS_TO_USERNAME: 'Sheet1!A1:D',
-  SCORES_USERNAMES: 'Sheet1!B1:B',
-  CODEWARS_SCORES: 'Sheet1!AA'
-}
-
-let sheets = null
+let sheets: any = null
 
 
-export function writeToSheet (userName, score) {
+export function writeToSheet (userName: string, score: number) {
   return new Promise((resolve, reject) => {
     const jwtClient = getJwtClient()
     jwtClient.authorize((err, tokens) => {
       if (err) reject(err)
-      sheets = google.sheets({
-        version: 'v4',
-        auth: jwtClient
-      })
+      sheets = initSheetsClient(jwtClient);
       findTargetUser(userName)
         .then(user => findUserScoreRow(user))
         .then(targetRowIndex => updateUserScore(targetRowIndex, score))
@@ -28,7 +20,7 @@ export function writeToSheet (userName, score) {
   })
 }
 
-function findTargetUser (userName) {
+function findTargetUser (userName: string) {
   return new Promise((resolve, reject) => {
     sheets && sheets.spreadsheets.values.get({
       spreadsheetId: process.env.CODEWARS_ACCOUNTS_SHEET,
@@ -37,7 +29,7 @@ function findTargetUser (userName) {
       if (err) reject(err)
       const values = response && response.values
 
-      let targetRowIndex = values && values.findIndex(v => v[3] === userName)
+      let targetRowIndex = values && values.findIndex((v: string) => v[3] === userName || checkURL(v[3]) === userName)
       if (targetRowIndex > -1) {
         resolve(values[targetRowIndex][0])
       }
@@ -46,7 +38,7 @@ function findTargetUser (userName) {
   });
 }
 
-function findUserScoreRow (user) {
+function findUserScoreRow (user: string) {
   return new Promise((resolve, reject) => {
     sheets && sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SCORE_SHEET,
@@ -54,7 +46,7 @@ function findUserScoreRow (user) {
     }, (err, response) => {
       if (err) reject(err)
       const values = response && response.values
-      let targetRowIndex = values && values.findIndex(v => v[0] === user)
+      let targetRowIndex = values && values.findIndex((v: string) => v[0] === user)
       if (targetRowIndex) {
         resolve(++targetRowIndex)
       }

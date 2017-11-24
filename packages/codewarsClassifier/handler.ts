@@ -4,6 +4,7 @@ import { getCodewarsNicknames } from './services/sheetAccessor'
 import 'request'
 import rq from 'request-promise-native'
 import logger from './lib/logger'
+import { isArray } from "util";
 
 export const createResponse = (statusCode, body?) => ({
   statusCode,
@@ -11,48 +12,34 @@ export const createResponse = (statusCode, body?) => ({
   body: body ? JSON.stringify(body) : null,
 })
 
-export const evaluate = async (evt, ctx, cb) => {
+export const evaluate = async (evt: any, ctx: any, cb: any) => {
   const { userName, data, pageName } = JSON.parse(evt.body || evt.Records[0].Sns.Message)
   logger.info('userdata', JSON.stringify({ userName, data, pageName }))
-  const response: any = {
-    body: {
-      userName,
-      message: ''
-    }
-  }
   writeToSheet(userName, classify(data.data))
     .then(data => {
-      response.body.message = data
-      cb(null, createResponse(200, response.body))
+      cb(null, createResponse(200, { message: data }))
     }).catch(err => {
-      response.body.message = err
-      cb(null, createResponse(400, response.body))
+      cb(null, createResponse(400,  { message: err }))
     })
 }
 
-export const startCodewarsEvaluation = async (evt, ctx, cb) => {
-  const response: any = {
-    body: {
-      message: ''
-    }
-  }
+export const startCodewarsEvaluation = async (evt: any, ctx: any, cb: any) => {
   getCodewarsNicknames()
-    .then(data => {
-      logger.info(data)
+    .then((data: Array<string>) => {
+      logger.info('nicknames', data)
       return rq({
         method: 'POST',
-        uri: `https://i3m0xs5h0e.execute-api.eu-west-1.amazonaws.com/test/scrape/katas`,
+        uri: process.env.SENSEI_URL,
         body: {
-          "users": data
+          users: data
         },
         json: true
       })
-    }).then(data => {
-      response.body.message = 'success'
-      cb(null, createResponse(200, response.body))
-  }).catch(err => {
+    }).then(() => {
+      cb(null, createResponse(200, { messsage: 'success' }))
+    }).catch(err => {
       logger.error(err);
-      response.body.message = err.message || err
-      cb(null, createResponse(400, response.body))
+      err = err.message || err
+      cb(null, createResponse(400, { message: err}))
     })
 }
