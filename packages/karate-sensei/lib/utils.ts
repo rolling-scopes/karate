@@ -1,4 +1,3 @@
-
 export const createResponse = (statusCode: number, body?: any) => ({
   statusCode,
   headers: { 'Access-Control-Allow-Origin': '*' },
