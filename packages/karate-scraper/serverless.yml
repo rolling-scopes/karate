@@ -23,6 +23,7 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
+  deploymentBucket: karate-sls-deploys
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: Allow

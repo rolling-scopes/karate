@@ -10,6 +10,7 @@ provider:
   runtime: nodejs6.10
   stage: test
   region: eu-west-1
+  deploymentBucket: karate-sls-deploys
   environment:
     CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
     SCORE_SHEET: ${env:SCORE_SHEET}

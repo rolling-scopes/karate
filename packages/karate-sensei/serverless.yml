@@ -23,6 +23,7 @@ provider:
   stage: test
   timeout: 120
   memorySize: 256
+  deploymentBucket: karate-sls-deploys
   environment:
     CODEWARS_ENDPOINT: ${file(./config.env.local.yml):CODEWARS_ENDPOINT}
     CODEWARS_API_KEY: ${file(./config.env.local.yml):CODEWARS_API_KEY}
