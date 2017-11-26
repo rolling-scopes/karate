@@ -4,11 +4,12 @@ import rq from 'request-promise-native'
 const SCRAPER_ENDPOINT = process.env.SCRAPER_ENDPOINT
 const CODEWARS_ENDPOINT = process.env.CODEWARS_ENDPOINT
 
-export const getResolvedKatas = ({ userName }) =>
+export const getResolvedKatas = ({ userName, page = 0}) =>
   rq({
     method: 'GET',
     uri: `${CODEWARS_ENDPOINT}/users/${userName}/code-challenges/completed`,
     headers: { Authorization: process.env.CODEWARS_API_KEY },
+    qs: { page },
     json: true,
   })
 

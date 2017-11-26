@@ -7,7 +7,7 @@ import logger from './lib/logger'
 const stepfunctions = new StepFunctions()
 const sns = new SNS()
 
-export const startScrape = async (evt: any, ctx: any, cb: any) => {
+export const startGather = async (evt: any, ctx: any, cb: any) => {
   try {
     const { pageName } = evt.pathParameters
     const { users } = JSON.parse(evt.body)
@@ -94,32 +94,25 @@ export const checkAddress = async (evt: any, ctx: any, cb: any) => {
   }
 }
 
-export const sentResults = async (evt: any, ctx: any, cb: any) => {
-  try {
-    logger.info('Event: ', evt)
-
-    await sns
-      .publish({
-        TopicArn: `${process.env.TOPIC_RESULTS}-${evt.pageName}`,
-        Message: JSON.stringify(evt),
-      })
-      .promise()
-    cb(null)
-  } catch (e) {
-    logger.error(e)
-    cb(e)
-  }
-}
-
 export const getResolvedKatas = async (evt: any, ctx: any, cb: any) => {
   try {
     logger.info('Event: ', evt)
 
-    const { data, ...other } = await api.getResolvedKatas(evt)
-    const katasIds = data.map(d => ({ id: d.id }))
+    const firstResult = await api.getResolvedKatas(evt)
+    let totalPages = Number(firstResult.totalPages);
+    let katasIds = firstResult.data.map(d => ({ id: d.id }))
+
+    totalPages = totalPages - 1;
+
+    while (totalPages !== 0) {
+      const nextResult = await api.getResolvedKatas(evt)
+      katasIds.push(nextResult.data.map(d => ({ id: d.id })))
+      totalPages = totalPages - 1;
+    }
 
     logger.info('Result: ', katasIds)
-    cb(null, { data: katasIds, ...other })
+
+    cb(null, { data: katasIds })
   } catch (e) {
     logger.error(e)
     cb(e)
@@ -147,6 +140,40 @@ export const getKatasInfo = async (evt: any, ctx: any, cb: any) => {
 
     logger.info('Result: ', res)
     cb(null, { data: res })
+  } catch (e) {
+    logger.error(e)
+    cb(e)
+  }
+}
+
+export const sentResults = async (evt: any, ctx: any, cb: any) => {
+  try {
+    logger.info('Event: ', evt)
+
+    await sns
+      .publish({
+        TopicArn: `${process.env.TOPIC_RESULTS}-${evt.pageName}`,
+        Message: JSON.stringify(evt),
+      })
+      .promise()
+    cb(null)
+  } catch (e) {
+    logger.error(e)
+    cb(e)
+  }
+}
+
+export const sentErrors = async (evt: any, ctx: any, cb: any) => {
+  try {
+    logger.info('Event: ', evt)
+
+    await sns
+      .publish({
+        TopicArn: `${process.env.TOPIC_ERRORS}`,
+        Message: JSON.stringify(evt),
+      })
+      .promise()
+    cb(null)
   } catch (e) {
     logger.error(e)
     cb(e)

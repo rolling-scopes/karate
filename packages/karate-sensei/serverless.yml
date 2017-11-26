@@ -12,8 +12,9 @@ custom:
   prefix: ${self:service}-${self:custom.stage}
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
-  waitTimeout: 60
+  waitTimeout: 90
   topicResults: ${file(./config.env.local.yml):TOPIC_RESULTS}
+  topicErrors: ${file(./config.env.local.yml):TOPIC_ERRORS}
 
 provider:
   name: aws
@@ -21,12 +22,13 @@ provider:
   region: eu-west-1
   stage: test
   timeout: 120
-  memorySize: 512
+  memorySize: 256
   environment:
     CODEWARS_ENDPOINT: ${file(./config.env.local.yml):CODEWARS_ENDPOINT}
     CODEWARS_API_KEY: ${file(./config.env.local.yml):CODEWARS_API_KEY}
     SCRAPER_ENDPOINT: ${file(./config.env.local.yml):SCRAPER_ENDPOINT}
     TOPIC_RESULTS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicResults}
+    TOPIC_ERRORS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicErrors}
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: "Allow"
@@ -37,15 +39,14 @@ provider:
         - "*"
 
 functions:
-  startScrape:
-    handler: handler.startScrape
-    timeout: 300
-    memorySize: 1024
+  startGather:
+    handler: handler.startGather
+    timeout: 120
+    memorySize: 256
     events:
       - http:
           method: post
-          path: scrape/{pageName}
-          cors: true
+          path: gather/{pageName}
 
     environment:
       statemachine_arn: ${self:resources.Outputs.Gather.Value}
@@ -62,14 +63,20 @@ functions:
   getResults:
     handler: handler.getResults
 
-  sentResults:
-    handler: handler.sentResults
-
   getResolvedKatas:
+    timeout: 180
+    memorySize: 512
     handler: handler.getResolvedKatas
 
   getKatasInfo:
     handler: handler.getKatasInfo
+
+  sentResults:
+    handler: handler.sentResults
+
+  sentErrors:
+    handler: handler.sentErrors
+
 
 stepFunctions:
   stateMachines:
@@ -192,9 +199,9 @@ stepFunctions:
                 Next: GatherFailed
             End: true
           GatherFailed:
-            Type: Fail
-            Cause: Scrape Failed
-            Error: Scrape returned FAILED
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-sentErrors
+            End: true
 
 resources:
   Outputs:
