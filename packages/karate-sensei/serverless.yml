@@ -13,7 +13,7 @@ custom:
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
   waitTimeout: 60
-  topicResults: ${file(./config.yml):TOPIC_RESULTS}
+  topicResults: ${file(./config.env.local.yml):TOPIC_RESULTS}
 
 provider:
   name: aws
@@ -23,9 +23,9 @@ provider:
   timeout: 120
   memorySize: 512
   environment:
-    CODEWARS_ENDPOINT: ${file(./config.yml):CODEWARS_ENDPOINT}
-    CODEWARS_API_KEY: ${file(./config.yml):CODEWARS_API_KEY}
-    SCRAPER_ENDPOINT: ${file(./config.yml):SCRAPER_ENDPOINT}
+    CODEWARS_ENDPOINT: ${file(./config.env.local.yml):CODEWARS_ENDPOINT}
+    CODEWARS_API_KEY: ${file(./config.env.local.yml):CODEWARS_API_KEY}
+    SCRAPER_ENDPOINT: ${file(./config.env.local.yml):SCRAPER_ENDPOINT}
     TOPIC_RESULTS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicResults}
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:

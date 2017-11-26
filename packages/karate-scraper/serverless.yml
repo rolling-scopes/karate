@@ -16,6 +16,7 @@ custom:
   start:
     seed: true
     inMemory: true
+  task_stream: ${file(./config.env.local.yml):task_stream}
 
 provider:
   name: aws
@@ -39,7 +40,7 @@ functions:
     timeout: 300
     memorySize: 1536
     events:
-      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/2017-11-18T13:14:56.306
+      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/${self.custom:task_stream}
 
   addTask:
     handler: handler.addTask
