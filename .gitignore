@@ -9,4 +9,8 @@ project.yml
 .DS_Store
 config.yml
 lerna-debug.log
+client_secret.json
+key.pem
+secure.p12
+.idea
 .vscode

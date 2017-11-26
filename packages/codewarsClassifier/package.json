@@ -1,0 +1,32 @@
+{
+  "name": "codewarsclassifier",
+  "version": "0.0.1",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "sls:deploy": "sls deploy",
+    "sls:remove": "sls remove",
+    "sls:package": "sls package",
+    "sls:dynamodb": "sls dynamodb install",
+    "deploy": "env-cmd .env npm run sls:deploy",
+    "remove": "env-cmd .env sls remove",
+    "package": "env-cmd .env sls package",
+    "dynamodb": "env-cmd .env sls dynamodb install",
+    "dev": "env-cmd .env sls offline start --noTimeout --prefix test --port 3001"
+  },
+  "author": "tikhon.scherbakov@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "google-auth-library": "^0.11.0",
+    "googleapis": "^22.2.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.142.0",
+    "copy-webpack-plugin": "^4.2.0",
+    "env-cmd": "^7.0.0",
+    "webpack": "^3.8.1"
+  }
+}
