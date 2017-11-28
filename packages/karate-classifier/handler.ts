@@ -4,7 +4,6 @@ import { getCodewarsNicknames } from './services/sheetAccessor'
 import 'request'
 import rq from 'request-promise-native'
 import logger from './lib/logger'
-import { isArray } from "util";
 
 export const createResponse = (statusCode, body?) => ({
   statusCode,
