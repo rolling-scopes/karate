@@ -9,6 +9,6 @@ export const classify = (katas: Array<any>) => {
 }
 
 function rankMapper(kata: any) {
-  const kataMapped = targetKatas.find(kn => kn === kata.id)
+  const kataMapped = targetKatas.find(kn => kn.id === kata.id)
   return kataMapped ? getMarkByRank(kata.rank) : 0
 }
