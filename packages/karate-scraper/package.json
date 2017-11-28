@@ -13,12 +13,12 @@
   "dependencies": {
     "@serverless-chrome/lambda": "^1.0.0-28",
     "bluebird": "^3.5.1",
-    "chrome-remote-interface": "^0.25.3",
+    "chrome-remote-interface": "^0.25.4",
     "winston": "^2.3.1"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.18",
     "@types/winston": "^2.3.7",
-    "aws-sdk": "^2.153.0"
+    "aws-sdk": "^2.156.0"
   }
 }

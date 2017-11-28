@@ -3,7 +3,6 @@ service: karate-classifier
 plugins:
   - serverless-pseudo-parameters
   - serverless-webpack
-  - serverless-dynamodb-local
   - serverless-offline
 
 provider:
@@ -11,6 +10,7 @@ provider:
   runtime: nodejs6.10
   stage: test
   region: eu-west-1
+  deploymentBucket: karate-sls-deploys
   environment:
     CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
     SCORE_SHEET: ${env:SCORE_SHEET}
@@ -61,7 +61,7 @@ functions:
           method: post
           path: evaluate
           cors: true
-      - sns: arn:aws:sns:eu-west-1:550997613790:karate-results-katas
+      - sns: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:karate-results-katas
 
   startCodewarsEvaluation:
     handler: handler.startCodewarsEvaluation

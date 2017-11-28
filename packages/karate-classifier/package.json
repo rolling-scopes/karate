@@ -1,5 +1,5 @@
 {
-  "name": "codewarsclassifier",
+  "name": "karate-classifier",
   "version": "0.0.1",
   "description": "",
   "main": "handler.js",

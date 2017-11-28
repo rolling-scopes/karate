@@ -12,17 +12,24 @@ custom:
   prefix: ${self:service}-${self:custom.stage}
   isVersionFunctions-prod: true
   isVersionFunctions-default: false
-  waitTimeout: 60
-  topicResults: ${file(./config.yml):TOPIC_RESULTS}
+  waitTimeout: 90
+  topicResults: ${file(./config.env.local.yml):TOPIC_RESULTS}
+  topicErrors: ${file(./config.env.local.yml):TOPIC_ERRORS}
 
 provider:
   name: aws
   runtime: nodejs6.10
   region: eu-west-1
   stage: test
+  timeout: 120
+  memorySize: 256
+  deploymentBucket: karate-sls-deploys
   environment:
-    SCRAPER_ENDPOINT: ${file(./config.yml):SCRAPER_ENDPOINT}
+    CODEWARS_ENDPOINT: ${file(./config.env.local.yml):CODEWARS_ENDPOINT}
+    CODEWARS_API_KEY: ${file(./config.env.local.yml):CODEWARS_API_KEY}
+    SCRAPER_ENDPOINT: ${file(./config.env.local.yml):SCRAPER_ENDPOINT}
     TOPIC_RESULTS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicResults}
+    TOPIC_ERRORS: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:${self:custom.topicErrors}
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: "Allow"
@@ -33,17 +40,17 @@ provider:
         - "*"
 
 functions:
-  startScrape:
-    handler: handler.startScrape
-    timeout: 300
-    memorySize: 1024
+  startGather:
+    handler: handler.startGather
+    timeout: 120
+    memorySize: 256
     events:
       - http:
           method: post
-          path: scrape/{pageName}
-          cors: true
+          path: gather/{pageName}
+
     environment:
-      statemachine_arn: ${self:resources.Outputs.Scrape.Value}
+      statemachine_arn: ${self:resources.Outputs.Gather.Value}
 
   findExpression:
     handler: handler.findExpression
@@ -57,17 +64,64 @@ functions:
   getResults:
     handler: handler.getResults
 
+  getResolvedKatas:
+    timeout: 180
+    memorySize: 512
+    handler: handler.getResolvedKatas
+
+  getKatasInfo:
+    handler: handler.getKatasInfo
+
   sentResults:
     handler: handler.sentResults
 
+  sentErrors:
+    handler: handler.sentErrors
+
+
 stepFunctions:
   stateMachines:
-    scrape:
-      name: scrape
+    gather:
+      name: gather
       definition:
-        Comment: Scrape
-        StartAt: FindExpression
+        Comment: GatherData
+        StartAt: ChooseService
         States:
+          ChooseService:
+            Type: Choice
+            Choices:
+              -
+                Variable: $.pageName
+                StringEquals: katas
+                Next: GetResolvedKatas
+              -
+                Variable: $.pageName
+                StringEquals: duolingo
+                Next: FindExpression
+            Default: GatherFailed
+          GetResolvedKatas:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getResolvedKatas
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: GatherFailed
+            Next: WaitBeforeGetKatasInfo
+          WaitBeforeGetKatasInfo:
+            Type: Wait
+            Seconds: ${self:custom.waitTimeout}
+            Next: GetKatasInfo
+          GetKatasInfo:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-getKatasInfo
+            InputPath: $.data
+            ResultPath: $.data
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: GatherFailed
+            Next: SentResults
           FindExpression:
             Type: Task
             Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-findExpression
@@ -75,7 +129,7 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             Next: CheckAddress
           CheckAddress:
             Type: Task
@@ -85,7 +139,7 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             Next: AddScrapeTask
           AddScrapeTask:
             Type: Task
@@ -95,7 +149,7 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             Next: WaitScrapeResults
           WaitScrapeResults:
             Type: Wait
@@ -109,7 +163,7 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             Next: CheckStatus
           CheckStatus:
             Type: Choice
@@ -117,11 +171,11 @@ stepFunctions:
               -
                 Variable: $.data.statusCode
                 NumericEquals: 400
-                Next: ScrapeFailed
+                Next: GatherFailed
               -
                 Variable: $.data.statusCode
                 NumericEquals: 403
-                Next: ScrapeFailed
+                Next: GatherFailed
               -
                 Variable: $.data.statusCode
                 NumericEquals: 202
@@ -135,7 +189,7 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             Next: SentResults
           SentResults:
             Type: Task
@@ -143,16 +197,16 @@ stepFunctions:
             Catch:
               - ErrorEquals:
                   - States.ALL
-                Next: ScrapeFailed
+                Next: GatherFailed
             End: true
-          ScrapeFailed:
-            Type: Fail
-            Cause: Scrape Failed
-            Error: Scrape returned FAILED
+          GatherFailed:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:custom.prefix}-sentErrors
+            End: true
 
 resources:
   Outputs:
-    Scrape:
+    Gather:
       Description: The ARN of the state machine
       Value:
-        Ref: Scrape
+        Ref: Gather

@@ -18,6 +18,6 @@
     "@types/bluebird": "^3.5.18",
     "@types/aws-lambda": "^0.0.21",
     "@types/winston": "^2.3.7",
-    "aws-sdk": "^2.153.0"
+    "aws-sdk": "^2.156.0"
   }
 }
