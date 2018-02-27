@@ -1,1 +1,11 @@
 version: 0.1
+phases:
+  install:
+    commands:
+      - npm install
+      - npm install -g serverless
+  build:
+    commands:
+      - npm run deploy:scraper | tee deploy.out
+      - npm run deploy:sensei | tee deploy.out
+      - npm run deploy:classifier | tee deploy.out
