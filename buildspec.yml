@@ -9,5 +9,3 @@ phases:
   build:
     commands:
       - npm run deploy:scraper | tee deploy.out
-      - npm run deploy:sensei | tee deploy.out
-      - npm run deploy:classifier | tee deploy.out

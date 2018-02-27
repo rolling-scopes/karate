@@ -16,7 +16,7 @@ custom:
   start:
     seed: true
     inMemory: true
-  task_stream: ${file(./config.env.local.yml):task_stream}
+  # task_stream: ${file(./config.env.local.yml):task_stream}
 
 provider:
   name: aws
@@ -36,12 +36,12 @@ provider:
     task_table: ${self:custom.task_table}
 
 functions:
-  scrape:
-    handler: handler.scrape
-    timeout: 300
-    memorySize: 1536
-    events:
-      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/${self.custom:task_stream}
+  # scrape:
+  #   handler: handler.scrape
+  #   timeout: 300
+  #   memorySize: 1536
+  #   events:
+  #     - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/${self.custom:task_stream}
 
   addTask:
     handler: handler.addTask
