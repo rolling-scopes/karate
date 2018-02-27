@@ -4,6 +4,7 @@ phases:
     commands:
       - npm install
       - npm install -g serverless
+      - npm install -g yarn
   build:
     commands:
       - npm run deploy:scraper | tee deploy.out
