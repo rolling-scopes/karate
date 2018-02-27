@@ -30,11 +30,11 @@ export const getLatest = (task_id: string) =>
 
 export const add = async (url: string, expression: string) => {
   const task_id = getTaskId({ url, expression })
-
+  const item = { task_id, url, expression, timestamp: Date.now() }
   await client
     .put({
       TableName: String(process.env.task_table),
-      Item: { task_id, url, expression, timestamp: Date.now() },
+      Item: { ...item },
     })
     .promise()
 

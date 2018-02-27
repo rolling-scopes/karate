@@ -15,3 +15,4 @@ secure.p12
 .idea
 .vscode
 config.env.local.yml
+.history

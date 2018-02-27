@@ -28,7 +28,7 @@ const createProfileExpression = ({
   languageNameSelector,
   statSelector,
 }: ProfileSelector) =>
-  `const d = async (resolve) => {
+  `const d = async () => {
     const delay = function (timeout) {
       return new Promise(function (resolve) {
         return setTimeout(function () {
