@@ -4,6 +4,7 @@ phases:
     commands:
       - npm install -g serverless
       - npm install -g yarn
+      - npm install -g lerna
       - yarn
   build:
     commands:
