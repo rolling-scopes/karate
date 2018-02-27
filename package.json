@@ -16,7 +16,8 @@
     "remove:scraper": "lerna run remove --scope karate-scraper --stream",
     "package:sensei": "lerna run package --scope karate-sensei --stream",
     "deploy:sensei": "lerna run deploy --scope karate-sensei --stream",
-    "remove:sensei": "lerna run remove --scope karate-sensei --stream"
+    "remove:sensei": "lerna run remove --scope karate-sensei --stream",
+    "deploy:classifier": "lerna run deploy --scope karate-sensei --stream"
   },
   "author": "siarhei.m.a@gmail.com",
   "license": "MIT",
