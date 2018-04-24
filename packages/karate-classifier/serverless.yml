@@ -9,12 +9,13 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: test
-  region: eu-west-1
-  deploymentBucket: karate-sls-deploys
+  region: us-east-1
+  profile: karate
+  deploymentBucket: karate-sls-bucket
   environment:
-    CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
+    # CODEWARS_ACCOUNTS_SHEET: ${env:CODEWARS_ACCOUNTS_SHEET}
     SCORE_SHEET: ${env:SCORE_SHEET}
-    SENSEI_URL: ${env:SENSEI_URL}
+    SENSEI_URL:  ${env:SENSEI_URL}
   memorySize: 512
   timeout: 300
 
@@ -61,7 +62,7 @@ functions:
           method: post
           path: evaluate
           cors: true
-      - sns: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:karate-results-katas
+      - sns: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:karate-results
 
   startCodewarsEvaluation:
     handler: handler.startCodewarsEvaluation

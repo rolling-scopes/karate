@@ -19,11 +19,12 @@ custom:
 provider:
   name: aws
   runtime: nodejs6.10
-  region: eu-west-1
+  region: us-east-1
   stage: test
   timeout: 120
   memorySize: 256
-  deploymentBucket: karate-sls-deploys
+  profile: karate
+  deploymentBucket: karate-sls-bucket
   environment:
     CODEWARS_ENDPOINT: ${file(./config.env.local.yml):CODEWARS_ENDPOINT}
     CODEWARS_API_KEY: ${file(./config.env.local.yml):CODEWARS_API_KEY}

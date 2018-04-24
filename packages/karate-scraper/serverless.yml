@@ -16,14 +16,14 @@ custom:
   start:
     seed: true
     inMemory: true
-  # task_stream: ${file(./config.env.local.yml):task_stream}
 
 provider:
   name: aws
   runtime: nodejs6.10
-  region: eu-west-1
+  region: us-east-1
   stage: test
-  deploymentBucket: karate-sls-deploys
+  profile: karate
+  deploymentBucket: karate-sls-bucket
   versionFunctions: ${self:custom.isVersionFunctions-${self:custom.stage}, self:custom.isVersionFunctions-default}
   iamRoleStatements:
     - Effect: Allow
@@ -36,12 +36,12 @@ provider:
     task_table: ${self:custom.task_table}
 
 functions:
-  # scrape:
-  #   handler: handler.scrape
-  #   timeout: 300
-  #   memorySize: 1536
-  #   events:
-  #     - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/${self.custom:task_stream}
+  scrape:
+    handler: handler.scrape
+    timeout: 300
+    memorySize: 1536
+    events:
+      - stream: arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:custom.task_table}/stream/2018-04-12T18:35:24.626
 
   addTask:
     handler: handler.addTask
