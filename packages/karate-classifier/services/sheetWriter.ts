@@ -1,5 +1,5 @@
 import { getJwtClient, initSheetsClient } from './gapiClient'
-import { RANGES } from './config'
+import { RANGES, GIT_HUB_POSITION, CODEWARS_POSITION } from './config'
 import { checkURL } from "./helpers";
 
 let sheets: any = null
@@ -29,9 +29,11 @@ function findTargetUser (userName: string) {
       if (err) reject(err)
       const values = response && response.values
 
-      let targetRowIndex = values && values.findIndex((v: string) => v[3] === userName || checkURL(v[3]) === userName)
+      let targetRowIndex = values && values.findIndex((v: string) => {
+        return v[CODEWARS_POSITION] === userName || checkURL(v[CODEWARS_POSITION]) === userName
+      })
       if (targetRowIndex > -1) {
-        resolve(values[targetRowIndex][0])
+        resolve(values[targetRowIndex][GIT_HUB_POSITION])
       }
       reject('Unable to get target user')
     });
